@@ -1,0 +1,109 @@
+{% extends 'workers/base.html' %}
+{% load static %}
+
+{% block content %}
+{% block sidebar %}
+<div class="side-bar col-lg-3 mt-4">
+
+    {% endblock sidebar %}
+    {% include 'include/sidebar.html' %}
+    <div>
+
+            <a class="work_btn" href="{% url 'workers:new_worker' %}">Добавить сотрудника</a>
+
+
+            <a class="work_btn" href="{% url 'workers:new_post' %}">Добавить должность</a>
+
+
+            <a class="work_btn" href="{% url 'workers:new_division' %}">Добавить подразделение</a>
+
+            <a class="work_btn" href="{% url 'workers:new_post_state' %}">Добавить должность в подразделение</a>
+    </div>
+</div>
+
+<div class="tab_cont">
+    <div class="table_wrapper">
+        {% if division_list %}
+        <table class="table" id="tab" >
+            {% for division in division_list %}
+            <thead>
+            <tr>
+                <th align="center" colspan="6"><a class="division_link" style="color:white" href="{% url 'workers:division_detail' division.id %}">{{ division.name }}</a></th>
+            </tr>
+            <tr>
+                <th>ФИО</th>
+                <th>Должность</th>
+                <th>Оперативный состав</th>
+                <th>Спасатель</th>
+                <th>Дата начала службы</th>
+                <th>Дата последней аттестации</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if division.division_workers.all %}
+            {% for worker in division.division_workers.all %}
+            {% if worker in worker_list %}
+            <tr {% if worker.name == 'Вакансия' %} class="vac" {% endif %}>
+                <td style="height:15px;"><a href="{% url 'workers:worker_detail' worker.id %}">{{ worker.get_full_name }}</a></td>
+                <td><a href="{% url 'workers:edit_post' worker.post.id %}">{{ worker.post }} {% if worker.post.priority in view.get_service_priorities %} ({{worker.post.service_in_name}}.сл) {% endif %}</a></td>
+                <td>{% if worker.post.operative %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+                <td>{% if worker.post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+                <td>{{ worker.date_beginning }}</td>
+                <td>{% if not worker.post.rescuer %}
+                    Не аттестуется
+                    {% elif worker.attestated %}
+                    {{ worker.date_attestation }}
+                    {% else %}
+                    В ближайшее время
+                    {% endif %}
+                </td>
+
+            </tr>
+
+            {% endif %}
+            {% endfor %}
+            {% if filter %}
+            <tr>
+                <th align="center" colspan="6" class="table_foot_1">Штат: {{ division.get_state }}</th>
+            </tr>
+            <tr>
+                <th align="center" colspan="6" class="table_foot_2">Фактически: {{ division.division_workers.all|length }}</th>
+            </tr>
+            <tr>
+                <th align="center" colspan="6" class="table_foot_3">Вакансии:{% if division.get_vacancies %} {{ division.get_vacancies }} {% else %} 0 {% endif %}</th>
+            </tr>
+            </tbody>
+            {% endif %}
+            {% else %}
+            <tr>
+                <td colspan="6">Ожидает заполнения</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+
+        {% else %}
+        <h2>Нет данных по этому запросу</h2>
+        {% endif %}
+    </div>
+    <div>
+        <table border="1" cellpadding="4" cellspacing="0" id="table_total" >
+            <tr>
+                <th rowspan="3">Итого</th>
+
+
+                <td colspan="2" class="table_foot_1">Штат: {{ view.get_state }} </td>
+            </tr>
+            <tr>
+                <td class="table_foot_2">Фактически: {{ view.get_workers_number }} </td>
+            </tr>
+            <tr align="center">
+                <td class="table_foot_3">Вакансии: {{ view.get_vacancies_number }} </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}

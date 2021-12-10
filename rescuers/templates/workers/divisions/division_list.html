@@ -1,0 +1,16 @@
+{% extends 'workers/base.html' %}
+{% block title %} Список подразделений {% endblock title %}
+
+{% block divisions %}
+
+    <ul class="divisions clearfix">
+        {% for division in division_list %}
+        <li class="division-wrapper">
+            <a href="{% url 'workers:division_detail' division.id %}" class="division">{{ division.name }}</a>
+        </li>
+        {% endfor %}
+
+    </ul>
+
+
+{% endblock divisions %}

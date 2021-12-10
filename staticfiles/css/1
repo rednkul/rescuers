@@ -1,0 +1,6 @@
+import re
+
+url = 'divisions/division_detail/1323/'
+
+pk = re.search('\d{1,}', url).group(0)
+print(pk)

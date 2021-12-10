@@ -1,0 +1,15 @@
+{% extends 'workers/base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+
+<div class="col-lg-4 offset-lg-4">
+  <form action="{% url 'workers:edit_worker' worker.id %}" method="post" >
+
+    {% csrf_token %}
+    {% bootstrap_form form %}
+
+      <button name="submit" class="btn btn-outline-info btn-lg bg-info text-light d-block mx-auto">Сохранить изменения</button>
+
+  </form>
+</div>
+{% endblock content %}

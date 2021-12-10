@@ -1,0 +1,75 @@
+{% extends 'workers/base.html' %}
+{% load static %}
+
+{% block divisions %}
+
+
+<div class="row justify-content-start">
+    <div class="col-lg-3 offset-lg-3">
+        {% if worker.photo %}
+        <img src="{{ worker.photo.url }}" alt="" class="worker_photo">
+        {% else %}
+        <img src="{% static 'images/empty_photo.png' %}" alt="" class="worker_photo">
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4 ">
+        <table class="table" id="worker_tab">
+            <thead>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Фамилия</td>
+                <td>{{ worker.surname }}</td>
+            </tr>
+            <tr>
+                <td>Имя</td>
+                <td>{{ worker.name }}</td>
+            </tr>
+            <tr>
+                <td>Отчество</td>
+                <td>{{ worker.lastname }}</td>
+            </tr>
+            <tr>
+                <td>Пол</td>
+                <td>{{ worker.sex }}</td>
+            </tr>
+            <tr>
+                <td>Должность</td>
+                <td>{{ worker.post }}</td>
+            </tr>
+            <tr>
+                <td>Подразделение</td>
+                <td>{{ worker.division }}</td>
+            </tr>
+            <tr>
+                <td>Дата начала службы</td>
+                <td>{{ worker.date_beginning}}</td>
+            </tr>
+            <tr>
+                <td>Дата последней аттестации</td>
+                <td>{{ worker.date_attestation }}</td>
+            </tr>
+            <tr>
+                <td>Оперативный состав</td>
+                <td>{% if worker.post.operative %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Аттестованный спасатель</td>
+                <td>{% if worker.post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+            </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+    <div class="col-lg-6 offset-lg-3">
+    <a class="work_btn" href="{% url 'workers:edit_worker' worker.id %}">Редактировать</a>
+    </div>
+</div>
+
+
+
+{% endblock divisions %}

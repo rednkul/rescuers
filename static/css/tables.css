@@ -1,0 +1,138 @@
+table {
+    width: 95%;
+    text-align: center;
+    border-bottom: 2px solid #dfdfdf;
+    border-radius: 6px;
+    border-collapse: separate;
+    border-spacing: 0px;
+    font-size:15px;
+    margin-bottom: 0px; !important
+
+
+    }
+table thead tr {
+    color: #ffffff;
+    font-weight: bold;
+    background:  #1E5945;
+    height: 14px;
+    }
+table tr td {
+    border-right: 1px solid #dfdfdf;
+    height: 14px;
+
+    }
+table tr td:last-child {
+    border-right: 0px;
+    }
+table tbody tr:nth-child(1n) {
+    background: #f6f6f6;
+    }
+table tbody tr:nth-child(2n) {
+    background: #e6e6e6;
+    }
+table tbody tr:hover {
+    background: #ffe8e8;
+    transition-duration: 0.6s;
+    }
+
+.table_foot_1 {
+    background:#fcc688;
+    text-align: right;
+    height: 16px;
+    padding:0 3px
+    }
+.table_foot_2 {
+    background:#88affc;
+    text-align: right;
+    height: 16px;
+    padding:0 3px
+    }
+
+.table_foot_3 {
+    background: #ba4949;
+    text-align: right;
+    height: 16px;
+    padding:0 3px
+    }
+
+
+.table tbody tr td, .table tbody tr th {
+    height: 16px;
+    padding:0 3px
+    }
+
+.table thead tr th {
+    height: 40px;
+    padding:0 3px;
+    font-size: 18px;
+    }
+
+.table_wrapper {
+    width: 100%;
+    height: calc(100% - 100px);
+    display: block;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    max-height: 800px;
+    min-height: 100%;
+    }
+
+#tab {
+    margin-bottom: 0px;
+    }
+.tab_cont {
+    height:100%;
+    width:75%;
+    }
+
+#worker_tab {
+    width:400px;
+    height:400px;
+    margin-left: 15px;
+    }
+
+.worker_photo {
+    width:400px;
+    height:400px;
+    }
+
+.vac {
+    color: red;
+    }
+
+.vac a {
+    color: red;
+    }
+
+#table_total {
+    width: 99%;
+    margin: 5px 0px 5px 0px;
+    border-radius: 6px;
+    border-collapse: separate;
+    font-size: 15px;
+    font-weight: bold;
+    border: 2px solid #dfdfdf;
+    text-align: center;
+    }
+
+#table_total tr th{
+    background-color: #1E5945;
+    color: white;
+
+    }
+
+.admin_staff {
+    background-color: #fce4d6;
+    }
+.staff_table {
+    border: 1px solid black;
+    }
+
+
+.service_head td{
+    font-weight: bold;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    }

@@ -1,0 +1,135 @@
+{% extends 'workers/base.html' %}
+{% load is_zero %}
+{% block title %} Укомплектованность отряда {% endblock title %}
+
+{% block content %}
+
+<div class="side-bar col-lg-3 mt-4">
+
+    <div>
+
+            <a class="work_btn" href="{% url 'workers:new_worker' %}">Добавить сотрудника</a>
+
+
+            <a class="work_btn" href="{% url 'workers:new_post' %}">Добавить должность</a>
+
+
+            <a class="work_btn" href="{% url 'workers:new_division' %}">Добавить подразделение</a>
+
+            <a class="work_btn" href="{% url 'workers:new_post_state' %}">Добавить должность в подразделение</a>
+    </div>
+</div>
+
+<div class="tab_cont">
+    <div class="table_wrapper">
+        <table class="table" id="tab" >
+            <thead>
+            <tr>
+                <th>№ П/П</th>
+                <th>Состав</th>
+                <th>Наименование должности</th>
+                <th>Штатная</th>
+                <th>Списочная</th>
+                <th>Вакансии</th>
+                <th>Перекомплект</th>
+                <th>% укомплектованности</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for service in service_list %}
+            <tr class="service_head" >
+                <td>{{ forloop.counter }}</td>
+                <td colspan="7">{{ service.name }}</td>
+
+            </tr>
+            {% for post in service.service_posts.all %}
+
+            <tr>
+                <td >{{ forloop.parentloop.counter }}. {{forloop.counter }}</a></td>
+                <td {% if post.operative %}> оперативный {% else %} class='admin_staff'> административно-технический {% endif %}</td>
+                <td>{{ post.name }}</td>
+                <td>{{ post.get_post_state|is_zero }}</td>
+                <td>{{ post.get_post_workers_number|is_zero }}</td>
+                <td>{{ post.get_post_vacancies_number|is_zero }}</td>
+                <td>
+                    {% if  post.get_post_workers_number > post.get_post_state %}
+                    {{ post.get_overstaffing|is_zero }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if post.get_post_state %}
+                    {{ post.get_staffing_percent|is_zero }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="3">Итого</td>
+                <td>
+                    {{ service.get_service_state|is_zero }}
+                </td>
+                <td>{{ service.get_service_workers_number|is_zero }}</td>
+                <td>{{ service.get_service_vacancies_number|is_zero }}</td>
+                <td>{{ service.get_service_overstaffingt|is_zero }}</td>
+                <td>{{ service.get_service_staffing_percent|is_zero }}</td>
+            </tr>
+
+            {% endfor %}
+
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Всего</td>
+                <td>{{ state_number|is_zero }}</td>
+                <td>{{ workers_number|is_zero }}</td>
+                <td>{{ vacancies_number|is_zero }}</td>
+                <td>{% if  workers_number > state_number %}
+                    {{ overstaffing }}
+                    {% endif %}
+                </td>
+                <td>{% if state_number %}
+                    {{ staffing_percent }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>оперативный</td>
+                <td>в том числе по оперативному составу</td>
+                <td>{{ operative_state|is_zero }}</td>
+                <td>{{ operative_number|is_zero }}</td>
+                <td>{{ operative_vacancies|is_zero }}</td>
+                <td>{% if  operative_number > state_operative %}
+                    {{ operative_overstaffing }}
+                    {% endif %}
+                </td>
+                <td>{% if operative_state %}
+                    {{ operative_staffing_percent }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>административно-технический</td>
+                <td>в том числе по административно-техническому составу</td>
+                <td>{{ admin_state|is_zero }}</td>
+                <td>{{ admin_number|is_zero }}</td>
+                <td>{{ admin_vacancies|is_zero }}</td>
+                <td>{% if  admin_number > admin_state %}
+                    {{ admin_overstaffing }}
+                    {% endif %}
+                </td>
+                <td>{% if admin_state %}
+                    {{ admin_staffing_percent }}
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock content %}
+

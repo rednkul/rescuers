@@ -1,0 +1,102 @@
+
+
+<div class="search-bar w3layouts-newsletter">
+    <h3 class="sear-head editContent" >Поиск сотрудника</h3>
+    <form  method="get" action="{% url 'workers:search' %}" class="d-flex editContent" >
+        <input type="search"  name="q" class="form-control" required="">
+        <button type="submit" class="btn1 btn" ><span class="fa fa-search" aria-hidden="true" ></span></button>
+    </form>
+</div>
+<!--preference -->
+<form action="{% url 'workers:worker_filter' %}"  method="get" name="filter">
+
+    <div class="left-side mt-2" >
+
+        <h3 class="sear-head editContent" >Подразделения</h3>
+        <ul class="w3layouts-box-list">
+            {% for division in view.get_divisions %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="division" value="{{ division.id }}">
+                <span class="span editContent" >{{ division.name }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+<!-- // preference -->
+<!-- discounts -->
+
+    <div class="left-side">
+        <h3 class="sear-head editContent" >Должности</h3>
+        <ul class="w3layouts-box-list">
+            {% for post in view.get_posts %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="post" value="{{ post.id }}">
+                <span class="span editContent" >{{ post.name }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+    <div class="left-side ml-3">
+        <h3 class="sear-head editContent" >Оперативный состав</h3>
+        <ul class="w3layouts-box-list">
+            {% for operative in view.get_operatives %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="operative" value="{{ operative }}">
+                <span class="span editContent" >{% if operative %} Да{% else %} Нет {% endif %}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="left-side ml-4">
+        <h3 class="sear-head editContent" >Аттестован</h3>
+        <ul class="w3layouts-box-list">
+            {% for rescuer in view.get_rescuers %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="rescuer" value="{{ rescuer }}">
+                <span class="span editContent" >{% if rescuer %} Да{% else %} Нет {% endif %}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    </div>
+    <div class="row">
+    <div class="left-side ml-3 ">
+        <h3 class="sear-head editContent" >Пол</h3>
+        <ul class="w3layouts-box-list">
+            {% for sex in view.get_sexes %}
+            {% if sex %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="sex" value="{{ sex }}">
+                <span class="span editContent" >{{ sex }}</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="left-side" style="margin-left: 11rem">
+        <h3 class="sear-head editContent" >Вакансии</h3>
+        <ul class="w3layouts-box-list">
+
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="vacancy" value="{{ 1 }}">
+                <span class="span editContent" >Только вакансии</span>
+            </li>
+            <li class="editContent" >
+                <input type="checkbox" class="checked" name="vacancy" value="{{ 2 }}">
+                <span class="span editContent" >Скрыть вакансии</span>
+            </li>
+
+        </ul>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2 offset-lg-4">
+            <button type="submit" class="btn  btn-lg bg-info text-light">Найти</button>
+        </div>
+    </div>
+</form>
+
+

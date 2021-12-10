@@ -1,0 +1,87 @@
+{% extends 'workers/base.html' %}
+{% load static %}
+{% block content %}
+{% block sidebar %}
+<div class="side-bar col-lg-3 mt-4">
+
+    {% endblock sidebar %}
+    {% include 'include/division_sidebar.html' %}
+    <div>
+
+            <a class="work_btn" href="{% url 'workers:edit_division' division.id %}">Редактировать подразделение</a>
+
+
+    </div>
+</div>
+
+<div class="tab_cont">
+    <div class="table_wrapper">
+        <table class="table" id="tab" >
+
+            <thead>
+            <tr>
+                <th align="center" colspan="6">{{ division.name }}</th>
+            </tr>
+            <tr>
+                <th>ФИО</th>
+                <th>Должность</th>
+                <th>Оперативный состав</th>
+                <th>Спасатель</th>
+                <th>Дата начала службы</th>
+                <th>Дата последней аттестации</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if division.division_workers.all %}
+            {% if worker_list %}
+            {% for worker in worker_list %}
+
+
+            <tr {% if worker.name == 'Вакансия' %} class="vac" {% endif %}>
+                <td style="height:15px;"><a href="{% url 'workers:worker_detail' worker.id %}">{{ worker.get_full_name }}</a></td>
+                <td><a href="{% url 'workers:edit_post' worker.post.id %}">{{ worker.post }}</a></td>
+                <td>{% if worker.post.operative %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+                <td>{% if worker.post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+                <td>{{ worker.date_beginning }}</td>
+                <td>{% if not worker.post.rescuer %}
+                    Не аттестуется
+                    {% elif worker.attestated %}
+                    {{ worker.date_attestation }}
+                    {% else %}
+                    В ближайшее время
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+
+
+            {% if filter %}
+            <tr>
+                <th align="center" colspan="6" class="table_foot_1">Штат: {{ division.get_state }}</th>
+            </tr>
+            <tr>
+                <th align="center" colspan="6" class="table_foot_2">Фактически: {{ division.division_workers.all|length }}</th>
+            </tr>
+             <tr>
+                <th align="center" colspan="6" class="table_foot_3">Вакансии:{% if division.get_vacancies %} {{ division.get_vacancies }} {% else %} 0 {% endif %}</th>
+            </tr>
+            </tbody>
+            {% endif %}
+            {% else %}
+            <tr>
+                <td colspan="6">Нет сотрудников по этому запросу</td>
+            </tr>
+            {% endif %}
+            {% else %}
+            <tr>
+                <td colspan="6">Ожидает заполнения</td>
+            </tr>
+            {% endif %}
+
+        </table>
+    </div>
+</div>
+{% endblock content %}
