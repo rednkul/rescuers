@@ -1,5 +1,5 @@
 import re
-
+from django.http import FileResponse
 from django.db.models import Q, Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -8,6 +8,89 @@ from django.views.generic import ListView, DetailView, FormView, UpdateView, Cre
 from .forms import WorkerForm
 from .models import Worker, Post, Division, PostState, Service
 
+
+
+
+
+
+
+class State:
+    """Общее по штату"""
+
+    def get_state_workers_number(self):
+        return sum(PostState.objects.all().values_list('standard_size', flat=True).order_by())
+
+    def get_workers_number(self):
+        return Worker.objects.exclude(name='Вакансия').count()
+
+    def get_vacancies_number(self):
+        return Worker.objects.filter(name='Вакансия').count()
+
+    def get_overstaffing(self):
+        if self.get_workers_number() > self.get_state_workers_number():
+            return self.get_workers_number() - self.get_state_workers_number()
+        else:
+            return 0
+
+    def get_staffing_percent(self):
+        if self.get_state_workers_number() > 0:
+            return round(self.get_workers_number() * 100 / self.get_state_workers_number(), 2)
+        else:
+            return 0
+
+    """По оперативному составу"""
+
+    def get_state_operative_number(self):
+        return sum(PostState.objects.filter(post__operative=True).values_list('standard_size', flat=True).order_by())
+
+    def get_operative_number(self):
+        return Worker.objects.filter(post__operative=True).exclude(name='Вакансия').count()
+
+    def get_operative_vacancies_number(self):
+        return Worker.objects.filter(post__operative=True, name='Вакансия').count()
+
+    def get_operative_overstaffing_number(self):
+        if self.get_operative_number() > self.get_state_operative_number():
+            return self.get_operative_number() - self.get_state_operative_number()
+        else:
+            return 0
+
+    def get_operative_staffing_percent(self):
+        if self.get_state_operative_number() > 0:
+            return round(self.get_operative_number() * 100 / self.get_state_operative_number())
+        else:
+            return 0
+
+    """По респираторному составу"""
+
+    def get_resperator_state(self):
+        return sum(PostState.objects.filter(post__rescuer=True).values_list('standard_size', flat=True).order_by())
+
+    def get_resperator_number(self):
+        return  Worker.objects.filter(post__rescuer=True).exclude(name='Вакансия').count()
+
+    """По административно-техническому составу"""
+
+    def get_state_admin_number(self):
+        return sum(PostState.objects.filter(post__operative=False).values_list('standard_size', flat=True).order_by())
+
+    def get_admin_number(self):
+        return Worker.objects.filter(post__operative=False).exclude(name='Вакансия').count()
+
+    def get_admin_vacancies_number(self):
+        return Worker.objects.filter(post__operative=False, name='Вакансия').count()
+
+    def get_admin_overstaffing_number(self):
+        if self.get_admin_number() > self.get_state_admin_number():
+            return self.get_admin_number() - self.get_state_admin_number()
+        else:
+            return 0
+
+    def get_admin_staffing_percent(self):
+        if self.get_state_admin_number() > 0:
+            return round(self.get_admin_number() * 100 / self.get_state_admin_number())
+        else:
+            return 0
 
 class FilterSearchFields:
 
@@ -405,51 +488,11 @@ class NewPostStateView(CreateView):
     fields = ['division', 'post', 'standard_size']
     success_url = reverse_lazy('workers:home_page')
 
-class StaffingView(ListView, FilterSearchFields):
+class StaffingView(ListView, FilterSearchFields, State):
     model = Service
     template_name = 'workers/staffing.html'
 
-    """Общее по штату"""
-    def get_state_workers_number(self):
-        return sum(PostState.objects.all().values_list('standard_size', flat=True).order_by())
 
-    def get_overstaffing(self):
-        return self.get_workers_number() - self.get_state_workers_number()
-
-    def get_staffing_percent(self):
-        return round(self.get_workers_number() * 100 / self.get_state_workers_number(), 2)
-
-    """По оперативному составу"""
-    def get_state_operative_number(self):
-        return sum(PostState.objects.filter(post__operative=True).values_list('standard_size', flat=True).order_by())
-
-    def get_operative_number(self):
-        return Worker.objects.filter(post__operative=True).exclude(name='Вакансия').count()
-
-    def get_operative_vacancies_number(self):
-        return Worker.objects.filter(post__operative=True, name='Вакансия').count()
-
-    def get_operative_overstaffing_number(self):
-        return self.get_operative_number() - self.get_state_operative_number()
-
-    def get_operative_staffing_percent(self):
-        return round(self.get_operative_number() * 100 / self.get_state_operative_number())
-
-    """По административно-техническому составу"""
-    def get_state_admin_number(self):
-        return sum(PostState.objects.filter(post__operative=False).values_list('standard_size', flat=True).order_by())
-
-    def get_admin_number(self):
-        return Worker.objects.filter(post__operative=False).exclude(name='Вакансия').count()
-
-    def get_admin_vacancies_number(self):
-        return Worker.objects.filter(post__operative=False, name='Вакансия').count()
-
-    def get_admin_overstaffing_number(self):
-        return self.get_admin_number() - self.get_state_admin_number()
-
-    def get_admin_staffing_percent(self):
-        return round(self.get_admin_number() * 100 / self.get_state_admin_number())
 
 
     def get_context_data(self, *args, **kwargs):

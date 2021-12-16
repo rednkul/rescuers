@@ -1,8 +1,9 @@
 {% extends 'workers/base.html' %}
-{% load is_zero %}
+{% load to_str is_zero static  %}
 {% block title %} Укомплектованность отряда {% endblock title %}
 
 {% block content %}
+
 
 <div class="side-bar col-lg-3 mt-4">
 
@@ -17,6 +18,8 @@
             <a class="work_btn" href="{% url 'workers:new_division' %}">Добавить подразделение</a>
 
             <a class="work_btn" href="{% url 'workers:new_post_state' %}">Добавить должность в подразделение</a>
+
+            <a class="work_btn" href="{% url 'sendfile:get_document' %}">Скачать отчет Excel</a>
     </div>
 </div>
 
@@ -45,7 +48,7 @@
             {% for post in service.service_posts.all %}
 
             <tr>
-                <td >{{ forloop.parentloop.counter }}. {{forloop.counter }}</a></td>
+                <td >{{ forloop.parentloop.counter|to_str }}, {{forloop.counter|to_str }}</a></td>
                 <td {% if post.operative %}> оперативный {% else %} class='admin_staff'> административно-технический {% endif %}</td>
                 <td>{{ post.name }}</td>
                 <td>{{ post.get_post_state|is_zero }}</td>
@@ -71,7 +74,7 @@
                 </td>
                 <td>{{ service.get_service_workers_number|is_zero }}</td>
                 <td>{{ service.get_service_vacancies_number|is_zero }}</td>
-                <td>{{ service.get_service_overstaffingt|is_zero }}</td>
+                <td>{{ service.get_service_overstaffing|is_zero }}</td>
                 <td>{{ service.get_service_staffing_percent|is_zero }}</td>
             </tr>
 
@@ -129,6 +132,11 @@
         </table>
     </div>
 </div>
+
+
+
+
+
 
 
 {% endblock content %}

@@ -31,4 +31,6 @@ urlpatterns = [
     # Укомплектованность
     path('staffing/', StaffingView.as_view(), name='staffing'),
 
+
+
 ]

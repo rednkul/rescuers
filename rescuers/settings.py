@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     # Сторонние приложения
     'bootstrap4',
 
+
     # Мои приложение
     'workers.apps.WorkersConfig',
+    'sendfile.apps.SendfileConfig',
 
 ]
 
@@ -143,3 +145,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+"""Работа с Excel"""
+FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
+                        "django_excel.TemporaryExcelFileUploadHandler")

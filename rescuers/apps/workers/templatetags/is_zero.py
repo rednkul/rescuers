@@ -4,7 +4,7 @@ register = template.Library()
 
 @register.filter
 def is_zero(value):
-    if value == 0:
+    if not value:
         return ''
     else:
         return value

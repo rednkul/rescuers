@@ -26,11 +26,16 @@ class Service(models.Model):
         return Worker.objects.filter(post__in=self.service_posts.all(), name='Вакансия').count()
 
     def get_service_overstaffing(self):
-        return self.get_service_workers_number() - self.get_service_state()
+        if self.get_service_workers_number() > self.get_service_state():
+            return self.get_service_workers_number() - self.get_service_state()
+        else:
+            return 0
 
     def get_service_staffing_percent(self):
-        return round(self.get_service_workers_number() * 100 / self.get_service_state(), 2)
-
+        if self.get_service_state() > 0:
+            return round(self.get_service_workers_number() * 100 / self.get_service_state(), 2)
+        else:
+            return 0
     def __str__(self):
         if len(self.get_abbreviation()) > 2:
             return f'{self.name} ({self.get_abbreviation()})'
@@ -82,10 +87,13 @@ class Post(models.Model):
         return Worker.objects.filter(post=self, name='Вакансия').count()
 
     def get_overstaffing(self):
-        return self.get_post_workers_number() - self.get_post_state()
+        if self.get_post_workers_number() > self.get_post_state():
+            return self.get_post_workers_number() - self.get_post_state()
+
 
     def get_staffing_percent(self):
-        return round(self.get_post_workers_number() * 100 / self.get_post_state(), 2)
+        if self.get_post_state() > 0:
+            return round(self.get_post_workers_number() * 100 / self.get_post_state(), 2)
 
 
     class Meta:
@@ -125,7 +133,7 @@ class Worker(models.Model):
                              blank=True, null=True, related_name='post_workers')
     division = models.ForeignKey(Division, verbose_name='Подразделение', on_delete=models.SET_NULL,
                                  blank=True, null=True, related_name='division_workers')
-    date_beginning = models.DateField('Время начала службы',)
+    date_beginning = models.DateField('Время начала службы')
     date_attestation = models.DateField('Дата последней аттестации', blank=True, default=None, null=True)
     on_duty = models.BooleanField('Фактическое нахождение на службе', blank=True, default=True, null=True)
     photo = models.ImageField('Фото', blank=True, default='', upload_to='workers/')
@@ -136,7 +144,7 @@ class Worker(models.Model):
         return f'{self.surname} {self.name} {self.lastname}'
 
     def get_initials(self):
-        return f"{self.surname} {self.name[0]}.{self.lastname[0]}"
+        return f"{self.name[0]}.{self.lastname[0]}. {self.surname} "
 
     def get_absolute_url(self):
         return reverse('workers:worker_detail', args=[str(self.id)])
