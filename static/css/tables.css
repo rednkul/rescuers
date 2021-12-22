@@ -49,12 +49,19 @@ table tbody tr:hover {
     }
 
 .table_foot_3 {
-    background: #ba4949;
+    background: #07ab17;
+
     text-align: right;
     height: 16px;
     padding:0 3px
     }
 
+.table_foot_4 {
+    background: #ba4949;
+    text-align: right;
+    height: 16px;
+    padding:0 3px
+    }
 
 .table tbody tr td, .table tbody tr th {
     height: 16px;
@@ -132,7 +139,37 @@ table tbody tr:hover {
 
 .service_head td{
     font-weight: bold;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
+    border: 1px solid black;
+    }
+
+.filter_wrapper {
+    width: 100%;
+
+    display: block;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    max-height: 150px;
+    min-height: 100%;
+    }
+
+.filter_header {
+    background-color: #737272;
+    tex-align: center;
+    }
+
+ul.biglist li {
+    margin-bottom: 0.2em;
+    }
+
+td.state:nth-child(1n) {
+    background-color: #140a7f;
+    }
+
+td.state:nth-child(2n) {
+    background-color: #9c410c;
+    }
+
+table tbody tr:nth-child(2n) {
+    background: #e6e6e6;
     }

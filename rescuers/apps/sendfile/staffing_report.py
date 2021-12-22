@@ -217,9 +217,12 @@ class ImportToExcel(State):
 
         self.row_number += 1
 
+        if Worker.objects.filter(post__name="Командир отряда"):
+            commander = Worker.objects.filter(post__name="Командир отряда")[0]
+            excel_sheet[f'A{self.row_number}'] = f'Командир отряда филиала "Якутский ВГСО" ФГУП "ВГСЧ"                                {commander.get_initials()}'
+
         excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
         excel_sheet[f'A{self.row_number}'].alignment = self.explanation_alignment
-        excel_sheet[f'A{self.row_number}'] = f'Командир отряда филиала "Якутский ВГСО" ФГУП "ВГСЧ"                                {Worker.objects.get(post__name="Командир отряда").get_initials()}'
 
         self.row_number += 1
 
@@ -229,12 +232,16 @@ class ImportToExcel(State):
 
         self.row_number += 1
 
+        if Worker.objects.filter(post__name="Старший инспектор по кадрам"):
+            inspector = Worker.objects.filter(post__name="Старший инспектор по кадрам")[0]
+            excel_sheet[f'A{self.row_number}'] = f'Командир отряда филиала "Якутский ВГСО" ФГУП "ВГСЧ"                                {inspector.get_initials()}'
+
+
         excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
         excel_sheet[f'A{self.row_number}'].alignment = self.explanation_alignment
-        excel_sheet[f'A{self.row_number}'] = f'Старший инспектор по кадрам                                                                                        {Worker.objects.get(post__name="Старший инспектор по кадрам").get_initials()}'
 
 
-        excel_file.save(filename=f'media/excel/reports/Укомплектованность на {datetime.datetime.now().strftime("%d.%m.%Y")}.xlsx')
+        excel_file.save(filename=f'media/excel/staffing_reports/Укомплектованность на {datetime.datetime.now().strftime("%d.%m.%Y")}.xlsx')
 
 
 file = ImportToExcel()

@@ -1,12 +1,14 @@
+import datetime
 import re
 from django.http import FileResponse
 from django.db.models import Q, Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, FormView, UpdateView, CreateView
+from django.views.generic import ListView, DetailView, FormView, UpdateView, CreateView, DeleteView
 
-from .forms import WorkerForm
+from .forms import WorkerForm, VacancyForm
 from .models import Worker, Post, Division, PostState, Service
+
 
 
 
@@ -94,6 +96,7 @@ class State:
 
 class FilterSearchFields:
 
+
     def get_divisions(self):
         return Division.objects.all().annotate(cnt=Count('division_workers')).order_by('-cnt')
 
@@ -101,13 +104,17 @@ class FilterSearchFields:
         return Post.objects.all()
 
     def get_operatives(self):
-        return Post.objects.values_list('operative', flat=True).distinct()
+        return Post.objects.values_list('operative', flat=True).order_by().distinct()
 
     def get_rescuers(self):
-        return Post.objects.values_list('rescuer', flat=True).distinct()
+        return Post.objects.values_list('rescuer', flat=True).order_by().distinct()
+
+    def get_attestated(self):
+        return [True, False]
 
     def get_sexes(self):
-        return sorted(Worker.objects.values_list("sex", flat=True).distinct())
+
+        return ['МУЖ', 'ЖЕН']
 
     def get_state(self):
         sum_state = PostState.objects.aggregate(Sum('standard_size'))
@@ -115,6 +122,9 @@ class FilterSearchFields:
 
     def get_workers_number(self):
         return Worker.objects.exclude(name='Вакансия').count()
+
+    def get_on_duty(self):
+        return Worker.objects.filter(on_duty=True).exclude(name='Вакансия').count()
 
     def get_vacancies_number(self):
         return Worker.objects.filter(name='Вакансия').count()
@@ -189,44 +199,87 @@ class WorkerFilterView(FilterSearchFields, ListView):
         get_rescuers = self.request.GET.getlist("rescuer")
         get_sexes = self.request.GET.getlist("sex")
         get_vacancy = self.request.GET.get("vacancy")
-        print(get_vacancy)
-
-        print(f'ВАк фильтр--------------------{get_vacancy}-----------------')
-
+        get_attestated = self.request.GET.getlist("attestated")
+        get_soon_attestation = self.request.GET.get("soon_attestation")
+        print(get_soon_attestation)
 
         division_filter = get_divisions if get_divisions else self.get_divisions()
         post_filter = get_posts if get_posts else self.get_posts()
         operative_filter = get_operatives if get_operatives else self.get_operatives()
         rescuer_filter = get_rescuers if get_rescuers else self.get_rescuers()
+        attestated_filter = get_attestated if get_attestated else self.get_attestated()
         sex_filter = get_sexes if get_sexes else self.get_sexes()
-        print(f'Пол-------------{sex_filter}')
 
-        if get_vacancy == '1':
-            vacancy_filter = 'Вакансия'
+        if get_soon_attestation:
+            soon_attestation_filter = datetime.datetime.today() + datetime.timedelta(days=90) - datetime.timedelta(days=365*3)
+        # ФИЛЬТР ПО БЛИЖАЙШЕЙ АТТЕСТАЦИИ
+            if get_vacancy == '1':
+                vacancy_filter = 'Вакансия'
 
-            workers = Worker.objects.filter(division__in=division_filter,
+                workers = Worker.objects.filter(division__in=division_filter,
                                             post__in=post_filter,
                                             post__operative__in=operative_filter,
                                             post__rescuer__in=rescuer_filter,
                                             sex__in=sex_filter,
                                             name=vacancy_filter,
+                                            attestated__in=attestated_filter,
+                                            date_attestation__lt=soon_attestation_filter,
                                             )
-        elif get_vacancy == '2':
+            elif get_vacancy == '2':
 
-            workers = Worker.objects.filter(division__in=division_filter,
+                workers = Worker.objects.filter(division__in=division_filter,
                                             post__in=post_filter,
                                             post__operative__in=operative_filter,
                                             post__rescuer__in=rescuer_filter,
                                             sex__in=sex_filter,
+                                            attestated__in=attestated_filter,
+                                            date_attestation__lt=soon_attestation_filter,
                                             ).exclude(name='Вакансия')
+            else:
+                workers = Worker.objects.filter(division__in=division_filter,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                date_attestation__lt=soon_attestation_filter,
+                                                )
+
+        # НЕТ ФИЛЬТРА ПО БЛИЖАЙШЕЙ АТТЕСТАЦИИ
         else:
-            workers = Worker.objects.filter(division__in=division_filter,
-                                            post__in=post_filter,
-                                            post__operative__in=operative_filter,
-                                            post__rescuer__in=rescuer_filter,
-                                            sex__in=sex_filter,
-                                            )
-        print(f'-------------------{workers}')
+            if get_vacancy == '1':
+
+
+                workers = Worker.objects.filter(division__in=division_filter,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                name='Вакансия',
+                                                attestated__in=attestated_filter,
+                                                )
+
+            elif get_vacancy == '2':
+
+                workers = Worker.objects.filter(division__in=division_filter,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                ).exclude(name='Вакансия')
+
+
+            else:
+                workers = Worker.objects.filter(division__in=division_filter,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                )
+
+
         return workers
 
     def get_queryset(self):
@@ -241,6 +294,8 @@ class WorkerFilterView(FilterSearchFields, ListView):
         get_rescuers = self.request.GET.getlist("rescuer")
         get_sexes = self.request.GET.getlist("sex")
         get_vacancy = self.request.GET.get("vacancy")
+        get_attestated = self.request.GET.getlist("attestated")
+        get_soon_attestation = self.request.GET.get("soon_attestation")
 
         context = super().get_context_data(*args, **kwargs)
         context['worker_list'] = self.get_workers()
@@ -250,10 +305,11 @@ class WorkerFilterView(FilterSearchFields, ListView):
         context['rescuer'] = ''.join([f"rescuer={x}&" for x in get_rescuers])
         context['sex'] = ''.join([f"sex={x}&" for x in get_sexes])
         context['vacancy'] = f"vacancy={get_vacancy}&"
-        # Определяю, есть ли фильтрация по должности/оеративности/аттестованности
+        # Определяю, есть ли фильтрация по должности/оеративности/аттестованности и т.д.
         # Если есть, то убираю вывод штатного и фактического размера подразделения
 
-        context['filter'] = not any((get_posts, get_operatives, get_rescuers, get_sexes, get_vacancy))
+        context['filter'] = not any((get_posts, get_operatives, get_rescuers, get_sexes, get_vacancy,
+                                     get_soon_attestation, get_attestated))
         return context
 
 
@@ -261,18 +317,42 @@ class WorkerDetailView(DetailView):
     model = Worker
     slug_field = 'id'
 
+class WorkerDeleteView(DeleteView):
+    model = Worker
+    template_name = 'workers/worker_delete.html'
+    success_url = reverse_lazy('workers:home_page')
 
+class NewVacancyView(CreateView):
+    model = Worker
+    template_name = 'workers/new_vacancy.html'
+    fields = ['post', 'division']
+
+    def post(self, request, *args, **kwargs):
+        form = VacancyForm(request.POST)
+        if form.is_valid():
+            new_vacancy = form.save(commit=False)
+            new_vacancy.name = 'Вакансия'
+            new_vacancy.surname = ''
+            new_vacancy.lastname = ''
+            new_vacancy.sex = 'МУЖ'
+            new_vacancy.date_beginning = None
+            new_vacancy.date_attestation = None
+            new_vacancy.on_duty = False
+            new_vacancy.photo = ''
+            new_vacancy.attestated = False
+            new_vacancy.save()
+        return redirect('workers:home_page')
 
 class NewWorkerView(CreateView):
     model = Worker
     template_name = 'workers/new_worker.html'
-    fields = ['surname', 'name', 'lastname', 'sex', 'post', 'division', 'photo']
+    fields = ['surname', 'name', 'lastname', 'sex', 'post', 'division','on_duty', 'photo']
     success_url = reverse_lazy('workers:home_page')
 
 class EditWorkerView(UpdateView):
     model = Worker
     template_name = 'workers/edit_worker.html'
-    fields = ['surname', 'name', 'lastname', 'sex', 'post', 'division', 'attestated','date_beginning', 'date_attestation', 'photo']
+    fields = ['surname', 'name', 'lastname', 'sex', 'post', 'division', 'attestated', 'on_duty','date_beginning', 'date_attestation', 'photo']
 
 class NewPostView(CreateView):
     model = Post
@@ -297,6 +377,13 @@ class EditDivisionView(UpdateView):
     template_name = 'workers/edit_division.html'
     fields = ['name', 'standard_size']
     success_url = reverse_lazy('workers:home_page')
+
+class DivisionDeleteView(DeleteView):
+    model = Division
+    template_name = 'workers/divisions/division_delete.html'
+    success_url = reverse_lazy('workers:home_page')
+
+
 
 class DivisionListView(ListView):
     queryset = Division.objects.all().annotate(cnt=Count('division_workers')).order_by('-cnt')
@@ -358,39 +445,83 @@ class DivisionFilter(ListView, FilterSearchFields):
         get_rescuers = self.request.GET.getlist("rescuer")
         get_sexes = self.request.GET.getlist("sex")
         get_vacancy = self.request.GET.get("vacancy")
+        get_attestated = self.request.GET.getlist("attestated")
+        get_soon_attestation = self.request.GET.get("soon_attestation")
 
         post_filter = get_posts if get_posts else self.get_posts()
         operative_filter = get_operatives if get_operatives else self.get_operatives()
         rescuer_filter = get_rescuers if get_rescuers else self.get_rescuers()
         sex_filter = get_sexes if get_sexes else self.get_sexes()
+        attestated_filter = get_attestated if get_attestated else self.get_attestated()
 
+        if get_soon_attestation:
+            soon_attestation_filter = datetime.datetime.today() + datetime.timedelta(days=90) - datetime.timedelta(
+                days=365 * 3)
+            # ФИЛЬТР ПО БЛИЖАЙШЕЙ АТТЕСТАЦИИ
+            if get_vacancy == '1':
+                vacancy_filter = 'Вакансия'
 
+                workers = Worker.objects.filter(divisionn=division,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                name=vacancy_filter,
+                                                attestated__in=attestated_filter,
+                                                date_attestation__lt=soon_attestation_filter,
+                                                )
+            elif get_vacancy == '2':
 
-        if get_vacancy == '1':
+                workers = Worker.objects.filter(division_=division,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                date_attestation__lt=soon_attestation_filter,
+                                                ).exclude(name='Вакансия')
+            else:
+                workers = Worker.objects.filter(division=division,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                date_attestation__lt=soon_attestation_filter,
+                                                )
 
-
-            workers = Worker.objects.filter(division=division,
-                                            post__in=post_filter,
-                                            post__operative__in=operative_filter,
-                                            post__rescuer__in=rescuer_filter,
-                                            sex__in=sex_filter,
-                                            name='Вакансия',
-                                            )
-        elif get_vacancy == '2':
-
-            workers = Worker.objects.filter(division=division,
-                                            post__in=post_filter,
-                                            post__operative__in=operative_filter,
-                                            post__rescuer__in=rescuer_filter,
-                                            sex__in=sex_filter,
-                                            ).exclude(name='Вакансия')
+        # НЕТ ФИЛЬТРА ПО БЛИЖАЙШЕЙ АТТЕСТАЦИИ
         else:
-            workers = Worker.objects.filter(division=division,
-                                            post__in=post_filter,
-                                            post__operative__in=operative_filter,
-                                            post__rescuer__in=rescuer_filter,
-                                            sex__in=sex_filter,
-                                            )
+            if get_vacancy == '1':
+
+                workers = Worker.objects.filter(division=division,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                name='Вакансия',
+                                                attestated__in=attestated_filter,
+                                                )
+
+            elif get_vacancy == '2':
+
+                workers = Worker.objects.filter(division=division,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                ).exclude(name='Вакансия')
+
+
+            else:
+                workers = Worker.objects.filter(division=division,
+                                                post__in=post_filter,
+                                                post__operative__in=operative_filter,
+                                                post__rescuer__in=rescuer_filter,
+                                                sex__in=sex_filter,
+                                                attestated__in=attestated_filter,
+                                                )
 
         return workers
 
@@ -403,6 +534,8 @@ class DivisionFilter(ListView, FilterSearchFields):
         get_rescuers = self.request.GET.getlist("rescuer")
         get_sexes = self.request.GET.getlist("sex")
         get_vacancy = self.request.GET.get("vacancy")
+        get_attestated = self.request.GET.getlist("attestated")
+        get_soon_attestation = self.request.GET.get("soon_attestation")
 
         worker_list = self.get_workers()
         if worker_list:
@@ -417,7 +550,8 @@ class DivisionFilter(ListView, FilterSearchFields):
         context['sex'] = ''.join([f"sex={x}&" for x in get_sexes])
         context['vacancy'] = f"vacancy={get_vacancy}&"
 
-        context['filter'] = not any((get_posts, get_operatives, get_rescuers, get_sexes, get_vacancy))
+        context['filter'] = not any((get_posts, get_operatives, get_rescuers, get_sexes, get_vacancy,
+                                     get_soon_attestation, get_attestated))
         return context
 
 
@@ -521,3 +655,38 @@ class StaffingView(ListView, FilterSearchFields, State):
 
 
         return context
+
+class ServiceEditView(UpdateView):
+    model = Service
+    template_name = 'workers/edit_service.html'
+    fields = ['name', ]
+
+class ServiceDeleteView(DeleteView):
+    model = Service
+    template_name = 'workers/service_delete.html'
+    success_url = reverse_lazy('workers:staffing')
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'workers/post_detail.html'
+    slug_field = 'id'
+
+class PostStateDetailView(DetailView):
+    model = PostState
+    template_name = 'workers/post_state_detail.html'
+    slug_field = 'slug'
+
+    def get_object(self):
+        division_id = self.kwargs['pk_div']
+        post_id = self.kwargs['pk_post']
+
+        return get_object_or_404(PostState,division=division_id, post=post_id)
+
+class PostStateEditView(UpdateView):
+    model = PostState
+    template_name = template_name = 'workers/edit_post_state.html'
+    slug_field = 'slug'
+    fields = ['standard_size',]
+
+
+

@@ -1857,6 +1857,10 @@ a.division_link:hover {
     }
 
 
+.worker_detail_btns {
+    width: 97% !important;
+    }
+
 .work_btn {
     display: block;
     width: 100%;
@@ -1868,9 +1872,21 @@ a.division_link:hover {
     color: white;
     }
 
-.work_btn:hover {
-    text-decoration:underline;
-    color:white;
+.del_btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 5px 0px;
+    background-color: #ED9209;
+    border-radius: 0.3rem;
+    font-size: 20px;
+    color: white;
+    }
+
+
+div.login {
+    margin-right: 35%;
+    margin-left: 35%;
     }
 
 

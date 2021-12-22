@@ -1,0 +1,14 @@
+{% extends 'workers/base.html' %}
+{% load bootstrap4 %}
+{% block divisions %}
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+    <h2>Вы уверены, что хотите удалить сотрудника {{ worker.get_initials }}?</h2>
+    </div>
+    <div class="col-lg-3 offset-lg-4 mt-5">
+    <form  action="{% url 'workers:delete_worker' worker.id %}" method="post">{% csrf_token %}
+      <button class="del_btn btn-danger" type="submit">Да</button>
+    </form>
+    </div>
+</div>
+{% endblock divisions %}

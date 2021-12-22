@@ -1,0 +1,17 @@
+{% extends  'workers/base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="col-lg-4 offset-lg-4 mt-5">
+    <h4 class="form-header" style="text-align:center;">Вход в систему</h4>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        {% bootstrap_form form %}
+
+        <button type="submit" class="btn btn-info btn-block"><h4>Войти</h4></button>
+    </form>
+</div>
+{% endblock content %}

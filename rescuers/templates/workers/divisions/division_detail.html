@@ -1,15 +1,15 @@
 {% extends 'workers/base.html' %}
-{% load static %}
+{% load static time_to_attestation is_zero to_slug %}
 {% block content %}
 {% block sidebar %}
-<div class="side-bar col-lg-3 mt-4">
+<div class="side-bar col-lg-3 mt-1">
 
     {% endblock sidebar %}
     {% include 'include/division_sidebar.html' %}
     <div>
 
-            <a class="work_btn" href="{% url 'workers:edit_division' division.id %}">Редактировать подразделение</a>
-
+            <a class="work_btn btn-info" href="{% url 'workers:edit_division' division.id %}">Редактировать подразделение</a>
+            <a class="del_btn btn-danger " href="{% url 'workers:delete_division' division.id %}">Удалить подразделение</a>
 
     </div>
 </div>
@@ -28,7 +28,7 @@
                 <th>Оперативный состав</th>
                 <th>Спасатель</th>
                 <th>Дата начала службы</th>
-                <th>Дата последней аттестации</th>
+                <th>Дата следующей аттестации</th>
             </tr>
             </thead>
             <tbody>
@@ -37,18 +37,18 @@
             {% for worker in worker_list %}
 
 
-            <tr {% if worker.name == 'Вакансия' %} class="vac" {% endif %}>
-                <td style="height:15px;"><a href="{% url 'workers:worker_detail' worker.id %}">{{ worker.get_full_name }}</a></td>
-                <td><a href="{% url 'workers:edit_post' worker.post.id %}">{{ worker.post }}</a></td>
+            <tr {% if worker.name == 'Вакансия' %} class="vac" {% endif %} {% if worker.attestated and worker.date_attestation|time_between_now_and_next_attestation %} style="background-color: #ffff00" {% endif %}>
+                <td><a href="{% url 'workers:worker_detail' worker.id %}">{% if worker.name == 'Вакансия' %}{{ worker.name.upper }} {% else %} {{ worker.get_full_name }} {% endif %}</a></td>
+                <td><a href="{% url 'workers:post_state_detail' pk_div=division.id pk_post=worker.post.id %}">{{ worker.post.name }}</a></td>
                 <td>{% if worker.post.operative %}<image src="{% static 'images/icon-True.svg' %}"></image>
                     {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
                 <td>{% if worker.post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
                     {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
-                <td>{{ worker.date_beginning }}</td>
+                <td>{{ worker.date_beginning|is_zero }}</td>
                 <td>{% if not worker.post.rescuer %}
                     Не аттестуется
                     {% elif worker.attestated %}
-                    {{ worker.date_attestation }}
+                    {{ worker.date_attestation|next_attestation }}
                     {% else %}
                     В ближайшее время
                     {% endif %}
@@ -67,6 +67,9 @@
             </tr>
              <tr>
                 <th align="center" colspan="6" class="table_foot_3">Вакансии:{% if division.get_vacancies %} {{ division.get_vacancies }} {% else %} 0 {% endif %}</th>
+            </tr>
+            <tr>
+                <th align="center" colspan="6" class="table_foot_4">Вакансии: {{ view.get_vacancies_number }} </th>
             </tr>
             </tbody>
             {% endif %}

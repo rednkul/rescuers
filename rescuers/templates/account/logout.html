@@ -1,0 +1,22 @@
+{% extends "workers/base.html" %}
+{% load bootstrap4 %}
+
+
+{% block head_title %}Выход из система{% endblock %}
+
+{% block content %}
+<div class="col-lg-4 offset-lg-4 mt-5">
+<h1>Вы уверены, что хотите выйти?</h1>
+
+
+
+<form method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+  <button class='btn btn-info mt-5 btn-block' type="submit">ДА</button>
+</form>
+</div>
+
+{% endblock content %}

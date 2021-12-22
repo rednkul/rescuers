@@ -72,10 +72,7 @@ class Post(models.Model):
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True,
                                 blank=True, default=None, related_name='service_posts')
     def __str__(self):
-        if self.service_in_name:
-            return f"{self.name} ({self.service_in_name}.сл)"
-        else:
-            return f"{self.name}"
+        return f"{self.name}"
 
     def get_post_state(self):
         return sum(self.post_state.values_list('standard_size', flat=True))
@@ -95,10 +92,15 @@ class Post(models.Model):
         if self.get_post_state() > 0:
             return round(self.get_post_workers_number() * 100 / self.get_post_state(), 2)
 
+    def get_post_state_in_division(self, division_id):
+        return PostState.objects.get(division__id=division_id, post=self)
+
 
     class Meta:
         verbose_name = "Должность"
         verbose_name_plural = "Должности"
+        ordering = ['priority',]
+
 
 
 class Division(models.Model):
@@ -108,6 +110,12 @@ class Division(models.Model):
 
     def get_state(self):
         return sum(self.division_state.values_list('standard_size', flat=True))
+
+    def get_division_workers_number(self):
+        return self.division_workers.exclude(name='Вакансия').count()
+
+    def get_division_on_duty(self):
+        return self.division_workers.filter(on_duty=True).exclude(name='Вакансия').count()
 
     def get_vacancies(self):
         return len(self.division_workers.filter(name='Вакансия'))
@@ -121,22 +129,23 @@ class Division(models.Model):
 
 
 
+
 class Worker(models.Model):
     """Сотрудник"""
-    surname = models.CharField('Фамилия', max_length=30, blank=True)
+    surname = models.CharField('Фамилия', max_length=30, blank=True, null=True)
     name = models.CharField('Имя', max_length=30)
-    lastname = models.CharField('Отчество', max_length=30, blank=True)
+    lastname = models.CharField('Отчество', max_length=30, blank=True, null=True)
     SEX_CHOICES = (('МУЖ', 'МУЖ'),
                    ('ЖЕН', 'ЖЕН'))
-    sex = models.CharField('Пол', max_length=6, choices=SEX_CHOICES, default='МУЖ', blank=True)
+    sex = models.CharField('Пол', max_length=6, choices=SEX_CHOICES, default='МУЖ', blank=True, null=True)
     post = models.ForeignKey(Post, verbose_name='Должность', on_delete=models.SET_NULL,
                              blank=True, null=True, related_name='post_workers')
     division = models.ForeignKey(Division, verbose_name='Подразделение', on_delete=models.SET_NULL,
                                  blank=True, null=True, related_name='division_workers')
-    date_beginning = models.DateField('Время начала службы')
+    date_beginning = models.DateField('Время начала службы', blank=True, null=True)
     date_attestation = models.DateField('Дата последней аттестации', blank=True, default=None, null=True)
-    on_duty = models.BooleanField('Фактическое нахождение на службе', blank=True, default=True, null=True)
-    photo = models.ImageField('Фото', blank=True, default='', upload_to='workers/')
+    on_duty = models.BooleanField('Фактическое нахождение на службе', blank=True, default=False, null=True)
+    photo = models.ImageField('Фото', blank=True, default='', upload_to='workers/', null=True)
     attestated = models.BooleanField('Аттестован', blank=True, default=False, null=True)
     #vacancy = models.BooleanField('Вакансия', default='False', help_text='Выберите, если создаете вакансию')
 
@@ -144,7 +153,10 @@ class Worker(models.Model):
         return f'{self.surname} {self.name} {self.lastname}'
 
     def get_initials(self):
-        return f"{self.name[0]}.{self.lastname[0]}. {self.surname} "
+        if self.name and self.lastname:
+            return f"{self.name[0]}.{self.lastname[0]}. {self.surname} "
+        else:
+            return f"{self.surname} "
 
     def get_absolute_url(self):
         return reverse('workers:worker_detail', args=[str(self.id)])
@@ -156,6 +168,7 @@ class Worker(models.Model):
 
         verbose_name = "Сотрудник"
         verbose_name_plural = "Сотрудники"
+        ordering = ['post__priority', ]
 
 
 class PostState(models.Model):
@@ -168,6 +181,15 @@ class PostState(models.Model):
 
     standard_size = models.PositiveSmallIntegerField('Штатный размер должности в подразделении', default=0)
 
+    slug = models.SlugField(verbose_name='Идентификатор', max_length=10, editable=False)
+
+    def _generate_slug(self):
+        slug = f'{self.division.id}_{self.post.id}'
+        self.slug = slug
+
+    def save(self, *args, **kwargs):
+        self._generate_slug()
+        super().save(*args, **kwargs)
 
 
     def __str__(self):
@@ -178,3 +200,21 @@ class PostState(models.Model):
         verbose_name_plural = 'Штатные размеры должностей'
         unique_together = ['division', 'post']
 
+
+    def get_division_post_state_workers(self):
+        division = self.division
+        post = self.post
+
+        return Worker.objects.filter(division=division, post=post).exclude(name='Вакансия').count()
+
+    def get_division_post_state_workers_on_duty(self):
+        division = self.division
+        post = self.post
+
+        return Worker.objects.filter(division=division, post=post, on_duty=True).exclude(name='Вакансия').count()
+
+    def get_division_post_state_workers_vacancies(self):
+        division = self.division
+        post = self.post
+
+        return Worker.objects.filter(division=division, post=post, name='Вакансия').count()

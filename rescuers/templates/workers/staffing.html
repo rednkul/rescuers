@@ -9,17 +9,13 @@
 
     <div>
 
-            <a class="work_btn" href="{% url 'workers:new_worker' %}">Добавить сотрудника</a>
+
+            <a class="work_btn btn-info" href="{% url 'workers:new_post' %}">Добавить службу</a>
+
+            <a class="work_btn btn-info" href="{% url 'workers:new_post' %}">Добавить должность</a>
 
 
-            <a class="work_btn" href="{% url 'workers:new_post' %}">Добавить должность</a>
 
-
-            <a class="work_btn" href="{% url 'workers:new_division' %}">Добавить подразделение</a>
-
-            <a class="work_btn" href="{% url 'workers:new_post_state' %}">Добавить должность в подразделение</a>
-
-            <a class="work_btn" href="{% url 'sendfile:get_document' %}">Скачать отчет Excel</a>
     </div>
 </div>
 
@@ -42,15 +38,15 @@
             {% for service in service_list %}
             <tr class="service_head" >
                 <td>{{ forloop.counter }}</td>
-                <td colspan="7">{{ service.name }}</td>
+                <td colspan="7"><a href="{% url 'workers:edit_service' service.id %}" >{{ service.name }}</a></td>
 
             </tr>
             {% for post in service.service_posts.all %}
 
             <tr>
-                <td >{{ forloop.parentloop.counter|to_str }}, {{forloop.counter|to_str }}</a></td>
+                <td >{{ forloop.parentloop.counter|to_str }}.{{forloop.counter|to_str }}</a></td>
                 <td {% if post.operative %}> оперативный {% else %} class='admin_staff'> административно-технический {% endif %}</td>
-                <td>{{ post.name }}</td>
+                <td><a href="{% url 'workers:post_detail' post.id %}">{{ post.name }}</a></td>
                 <td>{{ post.get_post_state|is_zero }}</td>
                 <td>{{ post.get_post_workers_number|is_zero }}</td>
                 <td>{{ post.get_post_vacancies_number|is_zero }}</td>
@@ -79,9 +75,26 @@
             </tr>
 
             {% endfor %}
-
+            </tbody>
+        </table>
+        </div>
+        <div>
+        <table class="table">
+            <thead>
             <tr>
-                <td></td>
+
+                <th>Состав</th>
+                <th></th>
+                <th>Штатная</th>
+                <th>Списочная</th>
+                <th>Вакансии</th>
+                <th>Перекомплект</th>
+                <th>% укомплектованности</th>
+            </thead>
+            </tr>
+            <tbody>
+            <tr>
+
                 <td></td>
                 <td>Всего</td>
                 <td>{{ state_number|is_zero }}</td>
@@ -97,7 +110,7 @@
                 </td>
             </tr>
             <tr>
-                <td></td>
+
                 <td>оперативный</td>
                 <td>в том числе по оперативному составу</td>
                 <td>{{ operative_state|is_zero }}</td>
@@ -113,8 +126,8 @@
                 </td>
             </tr>
             <tr>
-                <td></td>
-                <td>административно-технический</td>
+
+                <td class='admin_staff'>административно-технический</td>
                 <td>в том числе по административно-техническому составу</td>
                 <td>{{ admin_state|is_zero }}</td>
                 <td>{{ admin_number|is_zero }}</td>
@@ -130,7 +143,10 @@
             </tr>
             </tbody>
         </table>
+
+
     </div>
+    <a class="work_btn btn-info" href="{% url 'sendfile:download_stuffing_report' %}">Скачать отчет об укомплектованности</a>
 </div>
 
 

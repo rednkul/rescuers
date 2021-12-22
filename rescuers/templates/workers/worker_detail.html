@@ -1,5 +1,5 @@
 {% extends 'workers/base.html' %}
-{% load static %}
+{% load static is_zero %}
 
 {% block divisions %}
 
@@ -20,7 +20,7 @@
             <tbody>
             <tr>
                 <td>Фамилия</td>
-                <td>{{ worker.surname }}</td>
+                <td>{{ worker.surname|is_zero }}</td>
             </tr>
             <tr>
                 <td>Имя</td>
@@ -28,11 +28,11 @@
             </tr>
             <tr>
                 <td>Отчество</td>
-                <td>{{ worker.lastname }}</td>
+                <td>{{ worker.lastname|is_zero }}</td>
             </tr>
             <tr>
                 <td>Пол</td>
-                <td>{{ worker.sex }}</td>
+                <td>{{ worker.sex|is_zero }}</td>
             </tr>
             <tr>
                 <td>Должность</td>
@@ -44,11 +44,11 @@
             </tr>
             <tr>
                 <td>Дата начала службы</td>
-                <td>{{ worker.date_beginning}}</td>
+                <td>{{ worker.date_beginning|is_zero}}</td>
             </tr>
             <tr>
                 <td>Дата последней аттестации</td>
-                <td>{{ worker.date_attestation }}</td>
+                <td>{{ worker.date_attestation|is_zero }}</td>
             </tr>
             <tr>
                 <td>Оперативный состав</td>
@@ -66,7 +66,10 @@
 
     </div>
     <div class="col-lg-6 offset-lg-3">
-    <a class="work_btn" href="{% url 'workers:edit_worker' worker.id %}">Редактировать</a>
+    <a class="work_btn worker_detail_btns btn-info" href="{% url 'workers:edit_worker' worker.id %}">Редактировать</a>
+    </div>
+    <div class="col-lg-6 offset-lg-3">
+    <a class="del_btn worker_detail_btns btn-danger " href="{% url 'workers:delete_worker' worker.id %}">Удалить сотрудника</a>
     </div>
 </div>
 

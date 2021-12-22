@@ -1,0 +1,34 @@
+{% extends 'workers/base.html' %}
+{% load static bootstrap4 %}
+
+{% block content %}
+
+<div class="table_wrapper">
+
+    <table class="table" id="tab" >
+
+        <thead>
+        <tr>
+            <th align="center" colspan="6">
+                <a class="division_link" style="color:white" href="{% url 'workers:division_detail' poststate.division.id %}">{{ poststate.division.name }}</a>
+            </th>
+        </tr>
+
+        <tr class="state">
+            <td colspan="3" width="50%"> Должность </td>
+            <td colspan="3" width="50%"><a class="division_link" style="color:white" href="{% url 'workers:post_detail' poststate.post.id %}">{{ poststate.post.name }}</a></td>
+        </tr>
+        <tr class="state">
+            <td colspan="3" width="50%"> Штат </td>
+            <td colspan="3" width="50%">{{ poststate.standard_size }} человек</td>
+        </tr>
+    </table>
+</div>
+
+    <div class="col-lg-6 offset-lg-3 mt-5">
+        <a class="work_btn worker_detail_btns btn-info" href="{% url 'workers:edit_post_state' poststate.slug %}">Редактировать</a>
+    </div>
+
+
+
+{% endblock content %}

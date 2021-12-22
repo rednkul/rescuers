@@ -1,6 +1,11 @@
-import re
+import datetime
 
-url = 'divisions/division_detail/1323/'
+def next_attestation(value):
 
-pk = re.search('\d{1,}', url).group(0)
-print(pk)
+    last_attestation = datetime.datetime.strptime(value, '%d.%m.%Y')
+
+    next_attestation = datetime.date(last_attestation.year + 3, last_attestation.month, last_attestation.day)
+
+    return next_attestation.strftime('%d.%B.%Y')
+
+print(next_attestation('01.01.2021'))

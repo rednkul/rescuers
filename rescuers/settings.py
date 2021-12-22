@@ -31,10 +31,26 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Кастомная авторизация
+
+
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL ="/accounts/login"
+SITE_ID = 1
 
 # Application definition
 
 INSTALLED_APPS = [
+
+    # Сторонние приложения
+    'bootstrap4',
+    'allauth',
+    'allauth.account',
+
+    # Мои приложение
+    'workers.apps.WorkersConfig',
+    'sendfile.apps.SendfileConfig',
+
     # Стандартные приложения
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,14 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Сторонние приложения
-    'bootstrap4',
-
-
-    # Мои приложение
-    'workers.apps.WorkersConfig',
-    'sendfile.apps.SendfileConfig',
+    'django.contrib.sites',
 
 ]
 
@@ -83,6 +92,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rescuers.wsgi.application'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

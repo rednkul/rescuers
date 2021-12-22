@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load bootstrap4 %}
 <html lang="ru">
 <head>
     <!-- //Meta tag Keywords -->
@@ -25,7 +26,8 @@
 </head>
 <body style="background-color:#C7D0CC">
     <div>
-    <ol class="breadcrumb editContent" style="background-color:#434B4D">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark"  style="padding:0rem 0.5rem">
+    <ol class="breadcrumb" style="background-color:#343a40; padding-left:0">
         <li class="breadcrumb-item">
             <a href="{% url 'workers:home_page' %}" class="editContent">Сотрудники</a>
         </li>
@@ -35,7 +37,22 @@
         <li class="breadcrumb-item">
             <a href="{% url 'workers:staffing' %}" class="editContent">Укомплектованность</a>
         </li>
-    </ol>
+        </ol>
+        {% if user.is_authenticated %}
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item mr-3">
+                <span class="navbar-text">{{ user.username }}</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-danger" href="{% url 'account_logout'%}" >Выход</a>
+            </li>
+        </ul>
+        {% endif %}
+    </nav>
+
+
+
+
 
     {% block base %}
 

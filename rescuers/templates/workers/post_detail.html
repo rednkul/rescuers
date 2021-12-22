@@ -1,0 +1,48 @@
+{% extends 'workers/base.html' %}
+{% load static bootstrap4 %}
+
+{% block content %}
+
+    <div class="table_wrapper">
+
+        <table class="table" id="tab" >
+
+            <thead>
+            <tr>
+                <th align="center" colspan="5"><a class="division_link" style="color:white" href="{% url 'workers:edit_post' post.id %}">{{ post.name }}</a></th>
+            </tr>
+            <tr class="state">
+                <td colspan="3"> СОСТАВ </td>
+                <td colspan="3" >{% if post.operative %} оперативный {% else %} административно-технический {% endif %}</td>
+            </tr>
+            <tr class="state">
+                <td colspan="3" > СПАСАТЕЛЬ </td>
+                <td colspan="3">{% if post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Подразделеление</th>
+                <th>Штат</th>
+                <th>Списочно</th>
+                <th>Фактически</th>
+                <th>Вакансии</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for post_state in post.post_state.all %}
+            <tr>
+                <td><a href="{% url 'workers:division_detail' post_state.division.id %}">{{ post_state.division.name }}</a></td>
+                <td>{{ post_state.standard_size }}</td>
+                <td>{{ post_state.get_division_post_state_workers }}</td>
+                <td>{{ post_state.get_division_post_state_workers_on_duty }}</td>
+                <td>{{ post_state.get_division_post_state_workers_vacancies }}</td>
+            </tr>
+
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock content %}

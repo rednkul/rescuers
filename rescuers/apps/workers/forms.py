@@ -16,3 +16,13 @@ class WorkerForm(forms.ModelForm):
             'division': forms.Select(choices=Division.objects.all()),
             'photo': forms.ImageField()
         }
+
+class VacancyForm(forms.ModelForm):
+
+    class Meta:
+        model = Worker
+        fields = ['post', 'division']
+        widget = {
+            'post': forms.Select(choices=Post.objects.all()),
+            'division': forms.Select(choices=Division.objects.all()),
+        }
