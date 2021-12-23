@@ -51,7 +51,7 @@ class Post(models.Model):
     name = models.CharField('Наименование', max_length=100)
     operative = models.BooleanField('Принадлежность к оперативному составу')
     rescuer = models.BooleanField('Принадлежность к аттестованным спасателям')
-    attestation_period = models.CharField('Время между аттестациями для должности(если необходимо)', max_length=20)
+
     SERVICE_CHOICES = (
                        ('мед', 'мед'),
                        ('проф', 'проф'),
@@ -69,7 +69,7 @@ class Post(models.Model):
                                                           "Для респираторщика  - 8; "
                                                           "Для остальных по умолчанию - 9.")
 
-    service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True,
+    service = models.ForeignKey(Service, verbose_name='Служба', on_delete=models.SET_NULL, null=True,
                                 blank=True, default=None, related_name='service_posts')
     def __str__(self):
         return f"{self.name}"

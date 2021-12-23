@@ -1,0 +1,16 @@
+{% extends 'workers/base.html' %}
+{% load bootstrap4 %}
+{% block title %} Новая вакансия {% endblock title %}
+{% block divisions %}
+
+<div class="col-lg-4 offset-lg-4">
+  <form action="{% url 'workers:new_vacancy' %}" method="post" >
+
+    {% csrf_token %}
+    {% bootstrap_form form %}
+
+      <button name="submit" class="btn btn-outline-info btn-lg bg-info text-light d-block mx-auto">Добавить вакансию</button>
+
+  </form>
+</div>
+{% endblock divisions %}

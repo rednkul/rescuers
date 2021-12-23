@@ -1,6 +1,6 @@
 import sys, os
 import openpyxl
-from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
+from openpyxl.styles import PatternFill, Border, Side, Alignment, Font
 
 import datetime
 

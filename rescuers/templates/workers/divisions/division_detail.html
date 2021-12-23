@@ -1,5 +1,6 @@
 {% extends 'workers/base.html' %}
 {% load static time_to_attestation is_zero to_slug %}
+{% block title %} {{ division.name }}: список сотрудников {% endblock title %}
 {% block content %}
 {% block sidebar %}
 <div class="side-bar col-lg-3 mt-1">
@@ -63,15 +64,26 @@
                 <th align="center" colspan="6" class="table_foot_1">Штат: {{ division.get_state }}</th>
             </tr>
             <tr>
-                <th align="center" colspan="6" class="table_foot_2">Фактически: {{ division.division_workers.all|length }}</th>
-            </tr>
-             <tr>
-                <th align="center" colspan="6" class="table_foot_3">Вакансии:{% if division.get_vacancies %} {{ division.get_vacancies }} {% else %} 0 {% endif %}</th>
+                <th align="center" colspan="6" class="table_foot_2">Списочно: {{ division.get_division_workers_number }}</th>
             </tr>
             <tr>
-                <th align="center" colspan="6" class="table_foot_4">Вакансии: {{ view.get_vacancies_number }} </th>
+                <th align="center" colspan="6" class="table_foot_3">Фактически: {{ division.get_division_on_duty }}</th>
+            </tr>
+            <tr>
+                <th align="center" colspan="6" class="table_foot_4">Вакансии: {{ division.get_vacancies }}</th>
             </tr>
             </tbody>
+            {% else %}
+
+
+                    <tr>
+                        <th colspan="5">Итого по запросу:</th>
+                        <td colspan="1"  class="table_foot_2 text-center"> {{ worker_list|length }} </td>
+                    </tr>
+
+
+
+
             {% endif %}
             {% else %}
             <tr>

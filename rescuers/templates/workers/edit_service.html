@@ -1,5 +1,7 @@
 {% extends 'workers/base.html' %}
 {% load bootstrap4 %}
+
+{% block title %} Редактировать службу {{ service.name }} {% endblock title %}
 {% block divisions %}
 
 <div class="col-lg-4 offset-lg-4">
@@ -8,12 +10,13 @@
     {% csrf_token %}
     {% bootstrap_form form %}
 
-      <button name="submit" class="btn btn-outline-info btn-lg bg-info text-light d-block mx-auto" >Сохранить изменения</button>
+    <button name="submit" class="btn btn-outline-info btn-lg bg-info text-light d-block mx-auto" >Сохранить изменения</button>
 
+    <div class="col-lg-6 offset-lg-3 mt-2">
+      <a class="del_btn worker_detail_btns btn-danger ml-1 " href="{% url 'workers:delete_service' service.id %}">Удалить службу</a>
+    </div>
   </form>
 
 </div>
-<div class="col-lg-2 offset-lg-5 mt-4">
-  <a class="del_btn worker_detail_btns btn-danger " href="{% url 'workers:delete_service' service.id %}">Удалить службу</a>
-</div>
+
 {% endblock divisions %}

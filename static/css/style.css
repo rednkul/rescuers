@@ -1207,6 +1207,10 @@ form.w3layouts-newsletter {
     padding: 0.7em 2em;
 }
 
+.w3layouts-newsletter button.btn1:hover {
+    color: #dbde3e;
+}
+
 h2.logo-2 a {
     font-weight: 700;
     font-size: 34px;
@@ -1890,5 +1894,20 @@ div.login {
     }
 
 
+a.attest_excel {
+    color:#343a40;
 
+    }
 
+a.attest_excel:hover {
+    color:#ff4c4c;
+
+    }
+
+a.anav {
+    color:#ff4c4c !important;
+    }
+
+a.anav:hover {
+    color:#dbde3e !important;
+    }

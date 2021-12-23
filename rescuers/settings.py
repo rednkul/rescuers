@@ -29,10 +29,10 @@ SECRET_KEY = 'django-insecure-$x3jlb*hp**mgvf35s31&)w9ir=ro+8vktxmo^r4p^-j=7(-al
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Кастомная авторизация
-
+#AUTH_USER_MODEL = 'users.CustomUser'
 
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL ="/accounts/login"
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # Мои приложение
     'workers.apps.WorkersConfig',
     'sendfile.apps.SendfileConfig',
+    #'users.apps.UsersConfig',
 
     # Стандартные приложения
     'django.contrib.admin',

@@ -6,6 +6,7 @@ from wsgiref.util import FileWrapper
 
 from .list_report import ListImportToExcel, today, month_names
 from .staffing_report import ImportToExcel
+from .attestation_report import AttestationImportToExcel
 
 
 def get_excel(report):
@@ -24,6 +25,12 @@ def get_excel(report):
 
 def download_stuffing_report(request):
 
+    path = f'media/excel/staffing_reports'
+    for file in os.listdir(path):
+        os.remove(f'{path}/{file}')
+
+
+
     file = ImportToExcel()
     file.make_excel()
     the_file = f'media/excel/staffing_reports/Укомплектованность на {datetime.datetime.now().strftime("%d.%m.%Y")}.xlsx'
@@ -41,6 +48,9 @@ def download_stuffing_report(request):
 
 
 def download_list_report(request):
+    path = f'media/excel/list_reports'
+    for file in os.listdir(path):
+        os.remove(f'{path}/{file}')
 
     file = ListImportToExcel()
     file.make_excel()
@@ -57,3 +67,23 @@ def download_list_report(request):
 
     return response
 
+
+def download_attestation_report(request):
+    path = f'media/excel/attestation_reports'
+    for file in os.listdir(path):
+        os.remove(f'{path}/{file}')
+
+    file = AttestationImportToExcel()
+    file.make_excel()
+    the_file = f'media/excel/attestation_reports/Аттестующиеся {today.day}.{today.month}.{today.year}.xlsx'
+
+
+    chunk_size = 8192
+    response = StreamingHttpResponse(FileWrapper(open(the_file, 'rb'), chunk_size),
+                                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    response['Content-Length'] = os.path.getsize(the_file)
+    response['Content-Disposition'] = f'attachment; filename=%D0%90%D1%82%D1%82%D0%B5%D1%81%D1%82%D1%83%D1%8E%D1%89%D0%B8%D0%B5%D1%81%D1%8F%20{datetime.datetime.now().strftime("%d.%m.%Y")}.xlsx'
+
+
+    return response

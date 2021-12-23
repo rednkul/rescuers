@@ -1,11 +1,7 @@
-import datetime
+import re
 
-def next_attestation(value):
 
-    last_attestation = datetime.datetime.strptime(value, '%d.%m.%Y')
+ids = re.search('\d{1,}\_\d{1,}', 'edit_post_state/2_5/').group(0).split('_')
 
-    next_attestation = datetime.date(last_attestation.year + 3, last_attestation.month, last_attestation.day)
 
-    return next_attestation.strftime('%d.%B.%Y')
-
-print(next_attestation('01.01.2021'))
+print(ids)

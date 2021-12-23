@@ -115,7 +115,7 @@
         <ul class="w3layouts-box-list">
             <li class="editContent" >
                 <input type="checkbox" class="checked" name="soon_attestation" value="{{ True }}">
-                <span class="span editContent" ><b>Аттестуются в ближайшие 90 дней</b></span>
+                <span class="span editContent" ><b>Аттестуются в ближайшие 90 дней<a class="attest_excel ml-2" href="{% url 'sendfile:download_attestation_report' %}">СКАЧАТЬ</a></b></span>
             </li>
 
         </ul>

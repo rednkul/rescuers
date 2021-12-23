@@ -1,6 +1,6 @@
 {% extends 'workers/base.html' %}
 {% load static is_zero time_to_attestation %}
-
+{% block title %} Список сотрудников {% endblock title %}
 {% block content %}
 {% block sidebar %}
 <div class="side-bar col-lg-3 mt-1">
@@ -69,7 +69,7 @@
             {% endfor %}
             {% if filter %}
             <tr>
-                <th align="center" colspan="6" class="table_foot_1">Штат: {{ division.get_state|is_zero }}</th>
+                <th align="center" colspan="6" class="table_foot_1">Штат: {{ division.get_state }}</th>
             </tr>
             <tr>
                 <th align="center" colspan="6" class="table_foot_2">Списочно: {{ division.get_division_workers_number }}</th>
@@ -78,7 +78,7 @@
                 <th align="center" colspan="6" class="table_foot_3">Фактически: {{ division.get_division_on_duty }}</th>
             </tr>
             <tr>
-                <th align="center" colspan="6" class="table_foot_4">Вакансии:{{ division.get_vacancies }}</th>
+                <th align="center" colspan="6" class="table_foot_4">Вакансии: {{ division.get_vacancies }}</th>
             </tr>
             </tbody>
 
@@ -95,6 +95,7 @@
         <h2>Нет данных по этому запросу</h2>
         {% endif %}
     </div>
+    {% if filter %}
      <div>
         <table border="1" cellpadding="4" cellspacing="0" id="table_total" >
             <tr>
@@ -114,6 +115,18 @@
             </tr>
         </table>
     </div>
+    {% else %}
+    <div>
+        <table border="1" cellpadding="4" cellspacing="0" id="table_total" >
+            <tr>
+                <th colspan="2">Итого по запросу:</th>
+                <td colspan="2"  class="table_foot_2"> {{ worker_list|length }} </td>
+            </tr>
+
+
+        </table>
+    </div>
+    {% endif %}
 <a class="work_btn btn-info mt-2" href="{% url 'sendfile:download_list_report' %}">Скачать список сотрудников</a>
 </div>
 

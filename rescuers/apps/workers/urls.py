@@ -4,7 +4,7 @@ from .views import WorkersView, Search, WorkerFilterView, WorkerDetailView, NewW
     EditWorkerView, \
     NewPostView, EditPostView, EditDivisionView, NewDivisionView, DivisionListView, DivisionDetailView, DivisionFilter, \
     DivisionSearch, NewPostStateView, StaffingView, NewVacancyView, WorkerDeleteView, DivisionDeleteView, \
-    ServiceEditView, PostDetailView, PostStateDetailView, PostStateEditView
+    ServiceEditView, PostDetailView, PostStateDetailView, PostStateEditView, NewServiceView
 
 app_name = 'workers'
 
@@ -28,7 +28,7 @@ urlpatterns = [
     path('edit_post/<int:pk>/', login_required(EditPostView.as_view()), name='edit_post'),
     path('new_post_state/', login_required(NewPostStateView.as_view()), name='new_post_state'),
     path('post_state/<int:pk_div>_<int:pk_post>/', login_required(PostStateDetailView.as_view()), name='post_state_detail'),
-    path('post/<int:pk>', login_required(PostDetailView.as_view()), name='post_detail'),
+    path('post/<int:pk>/', login_required(PostDetailView.as_view()), name='post_detail'),
     path('edit_post_state/<slug:slug>/', login_required(PostStateEditView.as_view()),
                                         name='edit_post_state'),
 
@@ -36,7 +36,7 @@ urlpatterns = [
     path('new_division/', login_required(NewDivisionView.as_view()), name='new_division'),
     path('edit_division/<int:pk>/', login_required(EditDivisionView.as_view()), name='edit_division'),
     path('divisions/', login_required(DivisionListView.as_view()), name='divisions'),
-    path('divisions/<int:pk>/delete_division', login_required(DivisionDeleteView.as_view()), name='delete_division'),
+    path('divisions/<int:pk>/delete_division/', login_required(DivisionDeleteView.as_view()), name='delete_division'),
     path('divisions/division_detail/<int:pk>/', login_required(DivisionDetailView.as_view()), name='division_detail'),
     path('division/division_detail/<int:pk>/filter/', login_required(DivisionFilter.as_view()), name='division_filter'),
     path('division/division_detail/<int:pk>/search/', login_required(DivisionSearch.as_view()), name='division_search'),
@@ -45,7 +45,8 @@ urlpatterns = [
     path('staffing/', login_required(StaffingView.as_view()), name='staffing'),
 
     # Службы
-    path('service_edit/<int:pk>', login_required(ServiceEditView.as_view()), name='edit_service'),
-    path('services/<int:pk>/delete_service', login_required(DivisionDeleteView.as_view()), name='delete_service'),
+    path('new_service/', login_required(NewServiceView.as_view()), name='new_service'),
+    path('service_edit/<int:pk>/', login_required(ServiceEditView.as_view()), name='edit_service'),
+    path('services/<int:pk>/delete_service/', login_required(DivisionDeleteView.as_view()), name='delete_service'),
 
 ]

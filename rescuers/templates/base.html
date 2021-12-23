@@ -5,6 +5,7 @@
 <head>
     <!-- //Meta tag Keywords -->
     <title>{% block title %} {% endblock title %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- //Meta tag Keywords -->
@@ -29,13 +30,13 @@
     <nav class="navbar navbar-expand-md navbar-dark bg-dark"  style="padding:0rem 0.5rem">
     <ol class="breadcrumb" style="background-color:#343a40; padding-left:0">
         <li class="breadcrumb-item">
-            <a href="{% url 'workers:home_page' %}" class="editContent">Сотрудники</a>
+            <a class="anav" href="{% url 'workers:home_page' %}" class="editContent">Сотрудники</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{% url 'workers:divisions' %}" class="editContent">Подразделения</a>
+            <a class="anav" href="{% url 'workers:divisions' %}" class="editContent">Подразделения</a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{% url 'workers:staffing' %}" class="editContent">Укомплектованность</a>
+            <a class="anav" href="{% url 'workers:staffing' %}" class="editContent">Укомплектованность</a>
         </li>
         </ol>
         {% if user.is_authenticated %}
@@ -43,8 +44,11 @@
             <li class="nav-item mr-3">
                 <span class="navbar-text">{{ user.username }}</span>
             </li>
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="{% url 'account_logout'%}" >Выход</a>
+            <li  class="nav-item">
+                <a class="anav nav-link " href="{% url 'admin:index'%}" >Страница администратора</a>
+            </li>
+            <li  class="nav-item">
+                <a class="anav nav-link " href="{% url 'account_logout'%}" >Выход</a>
             </li>
         </ul>
         {% endif %}
