@@ -22,7 +22,7 @@ class State:
         return sum(PostState.objects.all().values_list('standard_size', flat=True).order_by())
 
     def get_workers_number(self):
-        return Worker.objects.exclude(name='Вакансия').count()
+        return Worker.objects.filter(on_duty=True).exclude(name='Вакансия').count()
 
     def get_vacancies_number(self):
         return Worker.objects.filter(name='Вакансия').count()
@@ -45,7 +45,7 @@ class State:
         return sum(PostState.objects.filter(post__operative=True).values_list('standard_size', flat=True).order_by())
 
     def get_operative_number(self):
-        return Worker.objects.filter(post__operative=True).exclude(name='Вакансия').count()
+        return Worker.objects.filter(post__operative=True, on_duty=True).exclude(name='Вакансия').count()
 
     def get_operative_vacancies_number(self):
         return Worker.objects.filter(post__operative=True, name='Вакансия').count()
@@ -76,7 +76,7 @@ class State:
         return sum(PostState.objects.filter(post__operative=False).values_list('standard_size', flat=True).order_by())
 
     def get_admin_number(self):
-        return Worker.objects.filter(post__operative=False).exclude(name='Вакансия').count()
+        return Worker.objects.filter(post__operative=False, on_duty=True).exclude(name='Вакансия').count()
 
     def get_admin_vacancies_number(self):
         return Worker.objects.filter(post__operative=False, name='Вакансия').count()
@@ -367,14 +367,14 @@ class NewPostView(GroupRequiredMixin,CreateView):
     group_required = ['Уровень 0',]
     model = Post
     template_name = 'workers/new_post.html'
-    fields = ['name', 'service', 'operative', 'rescuer',]
+    fields = ['name', 'service', 'operative', 'rescuer', 'priority']
     success_url = reverse_lazy('workers:home_page')
 
 class EditPostView(GroupRequiredMixin, UpdateView):
     group_required = ['Уровень 0', ]
     model = Post
     template_name = 'workers/edit_post.html'
-    fields = ['name', 'service', 'operative', 'rescuer',]
+    fields = ['name', 'service', 'operative', 'rescuer', 'priority']
     success_url = reverse_lazy('workers:home_page')
 
 class NewDivisionView(CreateView):
@@ -633,7 +633,14 @@ class NewPostStateView(GroupRequiredMixin,CreateView):
     group_required = ['Уровень 0', ]
     model = PostState
     template_name = 'workers/new_post_state.html'
-    fields = ['division', 'post', 'standard_size']
+    fields = ['division', 'post', 'standard_size',]
+    success_url = reverse_lazy('workers:home_page')
+
+class DeletePostView(GroupRequiredMixin,CreateView):
+    group_required = ['Уровень 0', ]
+    model = Post
+    template_name = 'workers/delete_post.html'
+
     success_url = reverse_lazy('workers:home_page')
 
 class StaffingView(ListView, FilterSearchFields, State):

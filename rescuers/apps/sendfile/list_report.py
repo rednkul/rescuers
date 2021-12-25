@@ -210,42 +210,42 @@ class ListImportToExcel(State):
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'командир отряда'
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="Командир отряда").exclude(name='Вакансия').count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="Командир отряда").exclude(name='Вакансия').count()
 
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'заместитель командира отряда'
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="Заместитель командира отряда").count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="Заместитель командира отряда").count()
 
         row_number += 1
         self.empty_row()
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'помощник командира отряда'
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="Помощник командира отряда").count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="Помощник командира отряда").count()
 
         row_number += 1
         self.empty_row()
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'заместитель командира взвода'
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="Заместитель командира взвода").count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="Заместитель командира взвода").count()
 
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'помощник командира взвода'
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="помощник командира взвода").count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="помощник командира взвода").count()
 
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'водитель автомобиля (специального)'
         excel_sheet[f'F{row_number}'].alignment = Alignment(horizontal='center', wrap_text=True)
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="Водитель автомобиля (специального)").count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="Водитель автомобиля (специального)").count()
 
         row_number += 1
 
         excel_sheet[f'F{row_number}'] = 'командир отделения'
-        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name="Командир отделения").exclude(name='Вакансия').count()
+        excel_sheet[f'G{row_number}'] = Worker.objects.filter(post__name__iregex="Командир отделения").exclude(name='Вакансия').count()
 
         row_number += 1
 

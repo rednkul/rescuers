@@ -20,6 +20,9 @@ class Service(models.Model):
         return sum(PostState.objects.filter(post__service=self).values_list('standard_size', flat=True))
 
     def get_service_workers_number(self):
+        return Worker.objects.filter(post__in=self.service_posts.all(), on_duty=True).exclude(name='Вакансия').count()
+
+    def get_service_workers_fact_number(self):
         return Worker.objects.filter(post__in=self.service_posts.all()).exclude(name='Вакансия').count()
 
     def get_service_vacancies_number(self):
@@ -69,15 +72,22 @@ class Post(models.Model):
                                                           "Для респираторщика  - 8; "
                                                           "Для остальных по умолчанию - 9.")
 
+
+
     service = models.ForeignKey(Service, verbose_name='Служба', on_delete=models.SET_NULL, null=True,
                                 blank=True, default=None, related_name='service_posts')
     def __str__(self):
         return f"{self.name}"
 
+
+
     def get_post_state(self):
         return sum(self.post_state.values_list('standard_size', flat=True))
 
     def get_post_workers_number(self):
+        return Worker.objects.filter(post=self, on_duty=True).exclude(name='Вакансия').count()
+
+    def get_post_workers_fact_number(self):
         return Worker.objects.filter(post=self).exclude(name='Вакансия').count()
 
     def get_post_vacancies_number(self):
@@ -112,10 +122,10 @@ class Division(models.Model):
         return sum(self.division_state.values_list('standard_size', flat=True))
 
     def get_division_workers_number(self):
-        return self.division_workers.exclude(name='Вакансия').count()
+        return self.division_workers.filter(on_duty=True).exclude(name='Вакансия').count()
 
     def get_division_on_duty(self):
-        return self.division_workers.filter(on_duty=True).exclude(name='Вакансия').count()
+        return self.division_workers.exclude(name='Вакансия').count()
 
     def get_vacancies(self):
         return len(self.division_workers.filter(name='Вакансия'))
@@ -144,7 +154,7 @@ class Worker(models.Model):
                                  blank=True, null=True, related_name='division_workers')
     date_beginning = models.DateField('Время начала службы', blank=True, null=True)
     date_attestation = models.DateField('Дата последней аттестации', blank=True, default=None, null=True)
-    on_duty = models.BooleanField('Фактическое нахождение на службе', blank=True, default=False, null=True)
+    on_duty = models.BooleanField('Списочно', blank=True, default=False, null=True)
     photo = models.ImageField('Фото', blank=True, default='', upload_to='workers/', null=True)
     attestated = models.BooleanField('Аттестован', blank=True, default=False, null=True)
     #vacancy = models.BooleanField('Вакансия', default='False', help_text='Выберите, если создаете вакансию')
@@ -205,13 +215,13 @@ class PostState(models.Model):
         division = self.division
         post = self.post
 
-        return Worker.objects.filter(division=division, post=post).exclude(name='Вакансия').count()
+        return Worker.objects.filter(division=division, post=post, on_duty=True).exclude(name='Вакансия').count()
 
-    def get_division_post_state_workers_on_duty(self):
+    def get_division_post_state_workers_fact(self):
         division = self.division
         post = self.post
 
-        return Worker.objects.filter(division=division, post=post, on_duty=True).exclude(name='Вакансия').count()
+        return Worker.objects.filter(division=division, post=post.exclude(name='Вакансия')).count()
 
     def get_division_post_state_workers_vacancies(self):
         division = self.division

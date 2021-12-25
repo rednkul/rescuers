@@ -4,7 +4,7 @@ from .views import WorkersView, Search, WorkerFilterView, WorkerDetailView, NewW
     EditWorkerView, \
     NewPostView, EditPostView, EditDivisionView, NewDivisionView, DivisionListView, DivisionDetailView, DivisionFilter, \
     DivisionSearch, NewPostStateView, StaffingView, NewVacancyView, WorkerDeleteView, DivisionDeleteView, \
-    ServiceEditView, PostDetailView, PostStateDetailView, PostStateEditView, NewServiceView
+    ServiceEditView, PostDetailView, PostStateDetailView, PostStateEditView, NewServiceView, DeletePostView
 
 app_name = 'workers'
 
@@ -26,6 +26,7 @@ urlpatterns = [
     # Страницы должностей
     path('new_post/', login_required(NewPostView.as_view()), name='new_post'),
     path('edit_post/<int:pk>/', login_required(EditPostView.as_view()), name='edit_post'),
+    path('post/<int:pk>/delete_post/', login_required(DeletePostView.as_view()), name='delete_post'),
     path('new_post_state/', login_required(NewPostStateView.as_view()), name='new_post_state'),
     path('post_state/<int:pk_div>_<int:pk_post>/', login_required(PostStateDetailView.as_view()), name='post_state_detail'),
     path('post/<int:pk>/', login_required(PostDetailView.as_view()), name='post_detail'),

@@ -1,11 +1,11 @@
 {% extends 'workers/base.html' %}
 {% load bootstrap4 %}
 
-{% block title %} Удалить службу {{ service.name }} {% endblock title %}
+{% block title %} Удалить должность {{ post.name }}{% endblock title %}
 {% block divisions %}
 <div class="row">
     <div class="col-lg-6 offset-lg-3">
-    <h2>Вы уверены, что хотите удалить службу {{ service.name }}?</h2>
+    <h2>Вы уверены, что хотите удалить должность {{ post.name }}?</h2>
     </div>
     <div class="col-lg-3 offset-lg-4 mt-5">
     <form  action="{% url 'workers:delete_service' worker.id %}" method="post">{% csrf_token %}

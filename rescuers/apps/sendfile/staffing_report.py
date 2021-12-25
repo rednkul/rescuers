@@ -234,7 +234,7 @@ class ImportToExcel(State):
 
         if Worker.objects.filter(post__name="Старший инспектор по кадрам"):
             inspector = Worker.objects.filter(post__name="Старший инспектор по кадрам")[0]
-            excel_sheet[f'A{self.row_number}'] = f'Командир отряда филиала "Якутский ВГСО" ФГУП "ВГСЧ"                                {inspector.get_initials()}'
+            excel_sheet[f'A{self.row_number}'] = f'Старший инспектор по кадрам                                                                                        {inspector.get_initials()}'
 
 
         excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
