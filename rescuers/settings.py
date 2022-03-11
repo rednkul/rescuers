@@ -23,11 +23,21 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
+
+
+
+
+DEBUG = True
+
+
+
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-$x3jlb*hp**mgvf35s31&)w9ir=ro+8vktxmo^r4p^-j=7(-al'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -47,9 +57,12 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
 
+
     # Мои приложение
+
     'workers.apps.WorkersConfig',
     'sendfile.apps.SendfileConfig',
+
 
 
     # Стандартные приложения
@@ -60,6 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.flatpages',
 
 ]
 
@@ -71,6 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'rescuers.urls'
@@ -163,8 +178,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles'),]
-STATIC_ROOT = STATIC_DIR
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+#STATIC_ROOT = STATIC_DIR
 
 MEDIA_URL = '/media/'
 
@@ -178,3 +193,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 """Работа с Excel"""
 FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
                         "django_excel.TemporaryExcelFileUploadHandler")
+

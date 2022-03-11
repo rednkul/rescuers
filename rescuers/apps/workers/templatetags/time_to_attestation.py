@@ -37,6 +37,6 @@ def time_between_now_and_next_attestation(value):
     next_attestation = datetime.date(last_attestation.year + 3, last_attestation.month, last_attestation.day)
 
     td = next_attestation - datetime.date.today()
-
+    print(int(str(td).split()[0]))
     return int(str(td).split()[0]) <= 90
 

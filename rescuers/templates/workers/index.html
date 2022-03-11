@@ -48,18 +48,19 @@
             {% if worker in worker_list %}
             <tr {% if worker.name == 'Вакансия' %} class="vac" {% endif %} {% if worker.attestated and worker.date_attestation|time_between_now_and_next_attestation %} style="background-color: #ffff00" {% endif %}>
                 <td><a href="{% url 'workers:worker_detail' worker.id %}">{% if worker.name == 'Вакансия' %}{{ worker.name.upper }} {% else %} {{ worker.get_full_name }} {% endif %}</a></td>
-                <td><a href="{% url 'workers:post_detail' worker.post.id %}">{{ worker.post }} {% if worker.post.priority in view.get_service_priorities %} ({{worker.post.service_in_name}}.сл) {% endif %}</a></td>
-                <td>{% if worker.post.operative %}<image src="{% static 'images/icon-True.svg' %}"></image>
-                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
-                <td>{% if worker.post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
-                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}</td>
+                <td><a href="{% url 'workers:post_detail' worker.post.id %}">{% if worker.post %}{{ worker.post }} {% if worker.post.priority in view.get_service_priorities %} ({{worker.post.service_in_name}}.сл) {% endif %} {% endif %}</a></td>
+                <td>{% if worker.post%}{% if worker.post.operative %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}{% endif %}</td>
+                <td>{% if worker.post %}{% if worker.post.rescuer %}<image src="{% static 'images/icon-True.svg' %}"></image>
+                    {% else %}<image src="{% static 'images/icon-False.svg' %}"></image>{% endif %}{% endif %}</td>
                 <td>{{ worker.date_beginning|is_zero }}</td>
-                <td>{% if not worker.post.rescuer %}
+                <td>{% if worker.post %}{% if not worker.post.rescuer %}
                     Не аттестуется
                     {% elif worker.attestated %}
                     {{ worker.date_attestation|next_attestation }}
                     {% else %}
                     В ближайшее время
+                    {% endif %}
                     {% endif %}
                 </td>
 

@@ -91,13 +91,13 @@ class ImportToExcel(State):
                 excel_sheet[f'{column}{self.row_number}'].alignment = self.headers_alignment
                 excel_sheet[f'{column}{self.row_number}'].border = table_border
             excel_sheet[f'A{self.row_number}'] = f'{i + 1}'
-            excel_sheet[f'B{self.row_number}'] = ''
+            excel_sheet[f'B{self.row_number}'] = None
             excel_sheet[f'C{self.row_number}'] = Service.objects.all()[i].name
-            excel_sheet[f'D{self.row_number}'] = ''
-            excel_sheet[f'E{self.row_number}'] = ''
-            excel_sheet[f'F{self.row_number}'] = ''
-            excel_sheet[f'G{self.row_number}'] = ''
-            excel_sheet[f'H{self.row_number}'] = ''
+            excel_sheet[f'D{self.row_number}'] = None
+            excel_sheet[f'E{self.row_number}'] = None
+            excel_sheet[f'F{self.row_number}'] = None
+            excel_sheet[f'G{self.row_number}'] = None
+            excel_sheet[f'H{self.row_number}'] = None
             self.row_number += 1
             for j in range(Service.objects.all()[i].service_posts.all().count()):
                 excel_sheet[f'A{self.row_number}'] = f'{i + 1}.{j + 1}'
@@ -217,28 +217,30 @@ class ImportToExcel(State):
 
         self.row_number += 1
 
-        if Worker.objects.filter(post__name="Командир отряда"):
-            commander = Worker.objects.filter(post__name="Командир отряда")[0]
-            excel_sheet[f'A{self.row_number}'] = f'Командир отряда филиала "Якутский ВГСО" ФГУП "ВГСЧ"                                {commander.get_initials()}'
+        if Service.objects.all():
+            if Worker.objects.filter(post__name="Командир отряда"):
+                commander = Worker.objects.filter(post__name="Командир отряда")[0]
+                excel_sheet[f'A{self.row_number}'] = f'Командир отряда филиала "Якутский ВГСО" ФГУП "ВГСЧ"                                {commander.get_initials()}'
 
-        excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
-        excel_sheet[f'A{self.row_number}'].alignment = self.explanation_alignment
+            excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
+            excel_sheet[f'A{self.row_number}'].alignment = self.explanation_alignment
 
-        self.row_number += 1
-
-        for column in self.columns:
-            excel_sheet[f'{column}{self.row_number}'] = ''
+            self.row_number += 1
 
 
-        self.row_number += 1
-
-        if Worker.objects.filter(post__name="Старший инспектор по кадрам"):
-            inspector = Worker.objects.filter(post__name="Старший инспектор по кадрам")[0]
-            excel_sheet[f'A{self.row_number}'] = f'Старший инспектор по кадрам                                                                                        {inspector.get_initials()}'
+            for column in self.columns:
+                excel_sheet[f'{column}{self.row_number}'] = ''
 
 
-        excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
-        excel_sheet[f'A{self.row_number}'].alignment = self.explanation_alignment
+            self.row_number += 1
+
+            if Worker.objects.filter(post__name="Старший инспектор по кадрам"):
+                inspector = Worker.objects.filter(post__name="Старший инспектор по кадрам")[0]
+                excel_sheet[f'A{self.row_number}'] = f'Старший инспектор по кадрам                                                                                        {inspector.get_initials()}'
+
+
+            excel_sheet.merge_cells(f'A{self.row_number}:H{self.row_number}')
+            excel_sheet[f'A{self.row_number}'].alignment = self.explanation_alignment
 
 
         excel_file.save(filename=f'media/excel/staffing_reports/Укомплектованность на {datetime.datetime.now().strftime("%d.%m.%Y")}.xlsx')

@@ -1,7 +1,0 @@
-import re
-
-
-ids = re.search('\d{1,}\_\d{1,}', 'edit_post_state/2_5/').group(0).split('_')
-
-
-print(ids)

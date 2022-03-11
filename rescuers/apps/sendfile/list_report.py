@@ -7,9 +7,11 @@ import datetime
 
 
 
-from workers.models import Service, Worker, Division
+from workers.models import Service, Worker, Division, Post
 from workers.views import State
 from workers.templatetags.is_zero import is_zero
+
+
 
 today = datetime.date.today()
 month_names = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября',
@@ -93,48 +95,49 @@ class ListImportToExcel(State):
 
             self.row_number += 1
             # Список сотрудников подразделения
-            for index, worker in enumerate(division.division_workers.all().order_by('post__priority')):
+            if Worker.objects.all() and Post.objects.all():
+                for index, worker in enumerate(division.division_workers.all().order_by('post__priority')):
 
-                excel_sheet[f'A{self.row_number}'] = index + 1
-                excel_sheet[f'A{self.row_number}'].alignment = center_alignment
+                    excel_sheet[f'A{self.row_number}'] = index + 1
+                    excel_sheet[f'A{self.row_number}'].alignment = center_alignment
 
-                if worker.name == 'Вакансия':
-                    excel_sheet[f'B{self.row_number}'] = worker.name.upper()
-                    excel_sheet[f'B{self.row_number}'].font = vacancy_font
-                else:
-                    excel_sheet[f'B{self.row_number}'] = worker.get_full_name()
+                    if worker.name == 'Вакансия':
+                        excel_sheet[f'B{self.row_number}'] = worker.name.upper()
+                        excel_sheet[f'B{self.row_number}'].font = vacancy_font
+                    else:
+                        excel_sheet[f'B{self.row_number}'] = worker.get_full_name()
 
-                if worker.sex == 'ЖЕН':
-                    excel_sheet[f'B{self.row_number}'].fill = female_fill
-                excel_sheet[f'B{self.row_number}'].alignment = left_alignment
+                    if worker.sex == 'ЖЕН':
+                        excel_sheet[f'B{self.row_number}'].fill = female_fill
+                    excel_sheet[f'B{self.row_number}'].alignment = left_alignment
 
-                excel_sheet[f'C{self.row_number}'] = worker.post.name
-                excel_sheet[f'C{self.row_number}'].alignment = center_alignment
-                if worker.post.rescuer:
-                    excel_sheet[f'C{self.row_number}'].fill = rescuer_fill
-                elif not worker.post.rescuer and worker.post.operative:
-                    excel_sheet[f'C{self.row_number}'].fill = operative_fill
+                    excel_sheet[f'C{self.row_number}'] = worker.post.name
+                    excel_sheet[f'C{self.row_number}'].alignment = center_alignment
+                    if worker.post.rescuer:
+                        excel_sheet[f'C{self.row_number}'].fill = rescuer_fill
+                    elif not worker.post.rescuer and worker.post.operative:
+                        excel_sheet[f'C{self.row_number}'].fill = operative_fill
 
-                if worker.date_beginning:
-                    excel_sheet[f'D{self.row_number}'] = f'{"0"+str(worker.date_beginning.day) if worker.date_beginning.day < 10 else worker.date_beginning.day }.{worker.date_beginning.month}.{worker.date_beginning.year}'
-                else:
-                    excel_sheet[f'D{self.row_number}'] = None
-                excel_sheet[f'D{self.row_number}'].alignment = center_alignment
+                    if worker.date_beginning:
+                        excel_sheet[f'D{self.row_number}'] = f'{"0"+str(worker.date_beginning.day) if worker.date_beginning.day < 10 else worker.date_beginning.day }.{worker.date_beginning.month}.{worker.date_beginning.year}'
+                    else:
+                        excel_sheet[f'D{self.row_number}'] = None
+                    excel_sheet[f'D{self.row_number}'].alignment = center_alignment
 
-                for column in self.columns:
-                    excel_sheet[f'{column}{self.row_number}'].border = table_border
-                    excel_sheet[f'{column}{self.row_number}'].font = table_font
+                    for column in self.columns:
+                        excel_sheet[f'{column}{self.row_number}'].border = table_border
+                        excel_sheet[f'{column}{self.row_number}'].font = table_font
 
-                if worker.name == 'Вакансия':
-                    excel_sheet[f'B{self.row_number}'] = worker.name.upper()
-                    excel_sheet[f'B{self.row_number}'].font = vacancy_font
-                    excel_sheet[f'C{self.row_number}'].font = vacancy_font
-                else:
-                    excel_sheet[f'B{self.row_number}'] = worker.get_full_name()
+                    if worker.name == 'Вакансия':
+                        excel_sheet[f'B{self.row_number}'] = worker.name.upper()
+                        excel_sheet[f'B{self.row_number}'].font = vacancy_font
+                        excel_sheet[f'C{self.row_number}'].font = vacancy_font
+                    else:
+                        excel_sheet[f'B{self.row_number}'] = worker.get_full_name()
 
-                excel_sheet[f'A{self.row_number}'].font = bold_font
+                    excel_sheet[f'A{self.row_number}'].font = bold_font
 
-                self.row_number += 1
+                    self.row_number += 1
 
             excel_sheet[f'A{self.row_number}'] = None
             excel_sheet[f'B{self.row_number}'] = None

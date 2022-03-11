@@ -142,7 +142,7 @@ class WorkersView(ListView, FilterSearchFields):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        print(self.get_divisions())
+
         context['division_list'] = self.get_divisions()
         context['filter'] = True
 
@@ -169,7 +169,7 @@ class Search(ListView, FilterSearchFields):
                                             Q(name__in=search) |
                                             Q(lastname__in=search)
                                             ).exclude(name='Вакансия')
-        print(f'Workers----------------{workers}-----------------')
+
         return workers
     def get_queryset(self):
 
@@ -200,7 +200,7 @@ class WorkerFilterView(FilterSearchFields, ListView):
         get_vacancy = self.request.GET.get("vacancy")
         get_attestated = self.request.GET.getlist("attestated")
         get_soon_attestation = self.request.GET.get("soon_attestation")
-        print(get_soon_attestation)
+
 
         division_filter = get_divisions if get_divisions else self.get_divisions()
         post_filter = get_posts if get_posts else self.get_posts()
@@ -325,7 +325,7 @@ class WorkerDeleteView(GroupRequiredMixin, DeleteView,):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(self.request.user.groups.all())
+
         return context
 
 class NewVacancyView(GroupRequiredMixin,CreateView):
@@ -354,7 +354,7 @@ class NewWorkerView(GroupRequiredMixin, CreateView):
     group_required = ['Уровень 0', 'Уровень 1']
     model = Worker
     template_name = 'workers/new_worker.html'
-    fields = ['surname', 'name', 'lastname', 'sex', 'post', 'division','on_duty', 'photo']
+    fields = ['surname', 'name', 'lastname', 'sex', 'post', 'division','on_duty', 'date_beginning', 'photo']
     success_url = reverse_lazy('workers:home_page')
 
 class EditWorkerView(GroupRequiredMixin, UpdateView):
@@ -380,14 +380,14 @@ class EditPostView(GroupRequiredMixin, UpdateView):
 class NewDivisionView(CreateView):
     model = Division
     template_name = 'workers/new_division.html'
-    fields = ['name', 'standard_size']
+    fields = ['name',]
     success_url = reverse_lazy('workers:home_page')
 
 class EditDivisionView(GroupRequiredMixin, UpdateView):
     group_required = ['Уровень 0', ]
     model = Division
     template_name = 'workers/edit_division.html'
-    fields = ['name', 'standard_size']
+    fields = ['name',]
     success_url = reverse_lazy('workers:home_page')
 
 class DivisionDeleteView(GroupRequiredMixin, DeleteView):
@@ -415,13 +415,13 @@ class DivisionDetailView(DetailView, FilterSearchFields):
         division_id =  re.search('\d{1,}', url).group(0)
 
         division = Division.objects.get(id=division_id)
-        print(f'--------------------------------------{division}--------------------')
+
         return division
 
     def get_posts(self):
         division = self.get_division()
         workers = Worker.objects.filter(division=division)
-        print(Post.objects.filter(post_workers__in=workers))
+
         return Post.objects.filter(post_workers__in=workers).distinct()
 
     def get_context_data(self, **kwargs):
@@ -585,7 +585,7 @@ class DivisionSearch(ListView, FilterSearchFields):
         division_id = re.search('\d{1,}', url).group(0)
 
         division = Division.objects.get(id=division_id)
-        print(f'--------------------------------------{division}--------------------')
+
         return division
 
 
@@ -600,14 +600,14 @@ class DivisionSearch(ListView, FilterSearchFields):
                 Q(name__iregex=search[0]) |
                 Q(lastname__iregex=search[0])
             ).exclude(name='Вакансия')
-            print(f'Workers1----------------{workers}-----------------')
+
         else:
             workers = Worker.objects.filter(division=division).filter(
                 Q(surname__in=search) |
                 Q(name__in=search) |
                 Q(lastname__in=search)
             ).exclude(name='Вакансия')
-            print(f'Workers2----------------{workers}-----------------')
+
         return workers
 
 
@@ -636,11 +636,10 @@ class NewPostStateView(GroupRequiredMixin,CreateView):
     fields = ['division', 'post', 'standard_size',]
     success_url = reverse_lazy('workers:home_page')
 
-class DeletePostView(GroupRequiredMixin,CreateView):
+class DeletePostView(GroupRequiredMixin, DeleteView):
     group_required = ['Уровень 0', ]
     model = Post
     template_name = 'workers/delete_post.html'
-
     success_url = reverse_lazy('workers:home_page')
 
 class StaffingView(ListView, FilterSearchFields, State):
@@ -689,7 +688,7 @@ class ServiceEditView(GroupRequiredMixin, UpdateView):
     model = Service
     template_name = 'workers/edit_service.html'
     fields = ['name', ]
-    success_url = reverse_lazy('workers:stuffing')
+    success_url = reverse_lazy('workers:staffing')
 
 class ServiceDeleteView(GroupRequiredMixin, DeleteView):
     group_required = ['Уровень 0', ]
@@ -716,7 +715,7 @@ class PostStateDetailView(DetailView):
 class PostStateEditView(GroupRequiredMixin, UpdateView):
     group_required = ['Уровень 0', ]
     model = PostState
-    template_name = template_name = 'workers/edit_post_state.html'
+    template_name  = 'workers/edit_post_state.html'
     slug_field = 'slug'
     fields = ['standard_size',]
 

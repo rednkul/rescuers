@@ -116,7 +116,7 @@ class Post(models.Model):
 class Division(models.Model):
     """Подразделеение"""
     name = models.CharField('Наименование', max_length=100)
-    standard_size = models.PositiveSmallIntegerField('Штатный размер')
+
 
     def get_state(self):
         return sum(self.division_state.values_list('standard_size', flat=True))

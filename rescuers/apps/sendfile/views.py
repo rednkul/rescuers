@@ -87,3 +87,16 @@ def download_attestation_report(request):
 
 
     return response
+
+def export_db(request):
+    the_file = 'db.sqlite3'
+
+    chunk_size = 8192
+    response = StreamingHttpResponse(FileWrapper(open(the_file, 'rb'), chunk_size),
+                                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    response['Content-Length'] = os.path.getsize(the_file)
+    response[
+        'Content-Disposition'] = f'attachment; filename=db.sqlite3'
+
+    return response
